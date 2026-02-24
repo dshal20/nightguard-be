@@ -1,26 +1,10 @@
 package com.nightguard.api.dto;
 
-import com.nightguard.api.user.User;
-
-public class UserResponse {
-  private String id;
+public class UpdateUserRequest {
   private String firstName;
   private String lastName;
   private String email;
   private String phoneNumber;
-
-  public static UserResponse fromUser(User user) {
-    UserResponse dto = new UserResponse();
-    dto.setId(user.getId());
-    dto.setFirstName(user.getFirstName());
-    dto.setLastName(user.getLastName());
-    dto.setEmail(user.getEmail());
-    dto.setPhoneNumber(user.getPhoneNumber());
-    return dto;
-  }
-
-  public String getId() { return id; }
-  public void setId(String id) { this.id = id; }
 
   public String getFirstName() { return firstName; }
   public void setFirstName(String firstName) { this.firstName = firstName; }
