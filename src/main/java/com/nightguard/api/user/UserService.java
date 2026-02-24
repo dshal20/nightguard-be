@@ -13,16 +13,17 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public User findOrCreate(String uid) {
+  public User findOrCreate(String uid, String email) {
     return userRepository.findById(uid).orElseGet(() -> {
       User user = new User();
       user.setId(uid);
+      user.setEmail(email);
       return userRepository.save(user);
     });
   }
 
-  public User update(String uid, UpdateUserRequest request) {
-    User user = findOrCreate(uid);
+  public User update(String uid, String email, UpdateUserRequest request) {
+    User user = findOrCreate(uid, email);
     if (request.getFirstName() != null)
       user.setFirstName(request.getFirstName());
     if (request.getLastName() != null)

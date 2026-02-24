@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.firebase.auth.FirebaseToken;
 import com.nightguard.api.dto.UpdateUserRequest;
 import com.nightguard.api.dto.UserResponse;
 
@@ -23,8 +24,8 @@ public class UserController {
 
   @GetMapping("/me")
   public ResponseEntity<UserResponse> getMe(Authentication authentication) {
-    String uid = (String) authentication.getPrincipal();
-    User user = userService.findOrCreate(uid);
+    FirebaseToken token = (FirebaseToken) authentication.getDetails();
+    User user = userService.findOrCreate(token.getUid(), token.getEmail());
     return ResponseEntity.ok(UserResponse.fromUser(user));
   }
 
@@ -32,8 +33,8 @@ public class UserController {
   public ResponseEntity<UserResponse> updateMe(
       Authentication authentication,
       @RequestBody UpdateUserRequest request) {
-    String uid = (String) authentication.getPrincipal();
-    User user = userService.update(uid, request);
+    FirebaseToken token = (FirebaseToken) authentication.getDetails();
+    User user = userService.update(token.getUid(), token.getEmail(), request);
     return ResponseEntity.ok(UserResponse.fromUser(user));
   }
 }
