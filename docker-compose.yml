@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./serviceAccountKey.json:/app/config/serviceAccountKey.json:ro
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      FIREBASE_CREDENTIALS_PATH: file:/app/config/serviceAccountKey.json
+    restart: unless-stopped
