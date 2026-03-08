@@ -1,0 +1,6 @@
+.gradle/
+build/
+.git/
+*.class
+src/main/resources/serviceAccountKey.json
+.env
