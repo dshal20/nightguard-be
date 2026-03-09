@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,5 +44,15 @@ public class VenueController {
         .map(VenueMemberResponse::from)
         .toList();
     return ResponseEntity.ok(members);
+  }
+
+  @PatchMapping("/{id}/members/{userId}")
+  public ResponseEntity<VenueMemberResponse> updateMemberRole(
+      @PathVariable UUID id,
+      @PathVariable String userId,
+      @RequestBody UpdateMemberRoleRequest request,
+      Authentication authentication) {
+    VenueMember updated = venueService.updateMemberRole(id, userId, request, authentication.getName());
+    return ResponseEntity.ok(VenueMemberResponse.from(updated));
   }
 }
