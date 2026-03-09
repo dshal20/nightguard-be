@@ -53,6 +53,32 @@ public class VenueService {
     return venueMemberRepository.findByVenueId(venueId);
   }
 
+  public List<VenueMember> addMembers(UUID venueId, List<AddVenueMemberRequest> requests, String requestingUserId) {
+    User requestingUser = userRepository.findById(requestingUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    boolean isAdmin = requestingUser.getRole() == Role.ADMIN;
+    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
+        .orElse(false);
+
+    if (!isAdmin && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    getById(venueId);
+
+    List<VenueMember> members = requests.stream().map(req -> {
+      VenueMember member = new VenueMember();
+      member.setVenueId(venueId);
+      member.setUserId(req.getUserId());
+      member.setRole(req.getRole());
+      return member;
+    }).toList();
+
+    return venueMemberRepository.saveAll(members);
+  }
+
   public void removeMember(UUID venueId, String targetUserId, String requestingUserId) {
     User requestingUser = userRepository.findById(requestingUserId)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));

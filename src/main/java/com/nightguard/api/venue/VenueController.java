@@ -41,6 +41,17 @@ public class VenueController {
     return ResponseEntity.ok(venueService.getById(id));
   }
 
+  @PostMapping("/{id}/members")
+  public ResponseEntity<List<VenueMemberResponse>> addMembers(
+      @PathVariable UUID id,
+      @RequestBody List<AddVenueMemberRequest> requests,
+      Authentication authentication) {
+    List<VenueMemberResponse> members = venueService.addMembers(id, requests, authentication.getName()).stream()
+        .map(VenueMemberResponse::from)
+        .toList();
+    return ResponseEntity.ok(members);
+  }
+
   @GetMapping("/{id}/members")
   public ResponseEntity<List<VenueMemberResponse>> getMembers(@PathVariable UUID id) {
     List<VenueMemberResponse> members = venueService.getMembers(id).stream()
