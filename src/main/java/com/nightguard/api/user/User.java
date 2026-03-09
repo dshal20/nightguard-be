@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -27,6 +29,10 @@ public class User {
 
   @Column(name = "phone_number")
   private String phoneNumber;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role", nullable = false)
+  private Role role = Role.USER;
 
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -60,6 +66,9 @@ public class User {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public Role getRole() { return role; }
+  public void setRole(Role role) { this.role = role; }
 
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }

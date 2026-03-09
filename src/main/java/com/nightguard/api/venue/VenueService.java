@@ -7,15 +7,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.nightguard.api.user.Role;
+import com.nightguard.api.user.User;
+import com.nightguard.api.user.UserRepository;
+
 @Service
 public class VenueService {
 
   private final VenueRepository venueRepository;
   private final VenueMemberRepository venueMemberRepository;
+  private final UserRepository userRepository;
 
-  public VenueService(VenueRepository venueRepository, VenueMemberRepository venueMemberRepository) {
+  public VenueService(VenueRepository venueRepository, VenueMemberRepository venueMemberRepository,
+      UserRepository userRepository) {
     this.venueRepository = venueRepository;
     this.venueMemberRepository = venueMemberRepository;
+    this.userRepository = userRepository;
   }
 
   public Venue create(CreateVenueRequest request) {
@@ -42,7 +49,73 @@ public class VenueService {
   }
 
   public List<VenueMember> getMembers(UUID venueId) {
-    getById(venueId); // ensures 404 if venue doesn't exist
+    getById(venueId);
     return venueMemberRepository.findByVenueId(venueId);
+  }
+
+  public List<VenueMember> addMembers(UUID venueId, List<AddVenueMemberRequest> requests, String requestingUserId) {
+    User requestingUser = userRepository.findById(requestingUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    boolean isAdmin = requestingUser.getRole() == Role.ADMIN;
+    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
+        .orElse(false);
+
+    if (!isAdmin && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    getById(venueId);
+
+    List<VenueMember> members = requests.stream().map(req -> {
+      VenueMember member = new VenueMember();
+      member.setVenueId(venueId);
+      member.setUserId(req.getUserId());
+      member.setRole(req.getRole());
+      return member;
+    }).toList();
+
+    return venueMemberRepository.saveAll(members);
+  }
+
+  public void removeMember(UUID venueId, String targetUserId, String requestingUserId) {
+    User requestingUser = userRepository.findById(requestingUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    boolean isAdmin = requestingUser.getRole() == Role.ADMIN;
+    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
+        .orElse(false);
+
+    if (!isAdmin && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    VenueMember member = venueMemberRepository.findByVenueIdAndUserId(venueId, targetUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    venueMemberRepository.delete(member);
+  }
+
+  public VenueMember updateMemberRole(UUID venueId, String targetUserId, UpdateMemberRoleRequest request,
+      String requestingUserId) {
+    User requestingUser = userRepository.findById(requestingUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    boolean isAdmin = requestingUser.getRole() == Role.ADMIN;
+    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
+        .orElse(false);
+
+    if (!isAdmin && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    VenueMember member = venueMemberRepository.findByVenueIdAndUserId(venueId, targetUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    member.setRole(request.getRole());
+    return venueMemberRepository.save(member);
   }
 }
