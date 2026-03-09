@@ -8,7 +8,7 @@ public class VenueMemberResponse {
   private UUID id;
   private UUID venueId;
   private String userId;
-  private String role;
+  private VenueRole role;
   private Instant createdAt;
   private Instant updatedAt;
 
@@ -32,8 +32,8 @@ public class VenueMemberResponse {
   public String getUserId() { return userId; }
   public void setUserId(String userId) { this.userId = userId; }
 
-  public String getRole() { return role; }
-  public void setRole(String role) { this.role = role; }
+  public VenueRole getRole() { return role; }
+  public void setRole(VenueRole role) { this.role = role; }
 
   public Instant getCreatedAt() { return createdAt; }
   public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

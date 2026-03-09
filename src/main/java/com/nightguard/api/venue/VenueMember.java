@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,8 +28,9 @@ public class VenueMember {
   @Column(name = "user_id", nullable = false)
   private String userId;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "role", nullable = false)
-  private String role;
+  private VenueRole role;
 
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -56,8 +59,8 @@ public class VenueMember {
   public String getUserId() { return userId; }
   public void setUserId(String userId) { this.userId = userId; }
 
-  public String getRole() { return role; }
-  public void setRole(String role) { this.role = role; }
+  public VenueRole getRole() { return role; }
+  public void setRole(VenueRole role) { this.role = role; }
 
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
