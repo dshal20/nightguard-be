@@ -33,7 +33,7 @@ public class SecurityConfig {
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/public/**").permitAll()
+            .requestMatchers("/public/**", "/error").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);
