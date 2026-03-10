@@ -36,6 +36,10 @@ public class Venue {
 
   @Column(name = "phone_number")
   private String phoneNumber;
+
+  @Column(name = "invite_code", nullable = false, unique = true, updatable = false)
+  private String inviteCode;
+
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
 
@@ -74,4 +78,7 @@ public class Venue {
   
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public String getInviteCode() { return inviteCode; }
+  public void setInviteCode(String inviteCode) { this.inviteCode = inviteCode; }
 }
