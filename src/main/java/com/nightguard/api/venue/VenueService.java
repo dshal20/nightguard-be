@@ -1,5 +1,6 @@
 package com.nightguard.api.venue;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,21 @@ import com.nightguard.api.user.UserRepository;
 
 @Service
 public class VenueService {
+
+  private static final String CODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static final SecureRandom RANDOM = new SecureRandom();
+
+  private String generateUniqueInviteCode() {
+    String code;
+    do {
+      StringBuilder sb = new StringBuilder(6);
+      for (int i = 0; i < 6; i++) {
+        sb.append(CODE_CHARS.charAt(RANDOM.nextInt(CODE_CHARS.length())));
+      }
+      code = sb.toString();
+    } while (venueRepository.findByInviteCode(code).isPresent());
+    return code;
+  }
 
   private final VenueRepository venueRepository;
   private final VenueMemberRepository venueMemberRepository;
@@ -33,6 +49,7 @@ public class VenueService {
     venue.setState(request.getState());
     venue.setPostalCode(request.getPostalCode());
     venue.setPhoneNumber(request.getPhoneNumber());
+    venue.setInviteCode(generateUniqueInviteCode());
     return venueRepository.save(venue);
   }
 
@@ -96,6 +113,21 @@ public class VenueService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
     venueMemberRepository.delete(member);
+  }
+
+  public VenueMember joinByInviteCode(String inviteCode, String userId) {
+    Venue venue = venueRepository.findByInviteCode(inviteCode)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid invite code"));
+
+    if (venueMemberRepository.findByVenueIdAndUserId(venue.getId(), userId).isPresent()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Already a member of this venue");
+    }
+
+    VenueMember member = new VenueMember();
+    member.setVenueId(venue.getId());
+    member.setUserId(userId);
+    member.setRole(VenueRole.MEMBER);
+    return venueMemberRepository.save(member);
   }
 
   public VenueMember updateMemberRole(UUID venueId, String targetUserId, UpdateMemberRoleRequest request,

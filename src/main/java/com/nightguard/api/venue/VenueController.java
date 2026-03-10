@@ -69,6 +69,14 @@ public class VenueController {
     venueService.removeMember(id, userId, authentication.getName());
   }
 
+  @PostMapping("/join/{code}")
+  public ResponseEntity<VenueMemberResponse> joinVenue(
+      @PathVariable String code,
+      Authentication authentication) {
+    VenueMember member = venueService.joinByInviteCode(code, authentication.getName());
+    return ResponseEntity.ok(VenueMemberResponse.from(member));
+  }
+
   @PatchMapping("/{id}/members/{userId}")
   public ResponseEntity<VenueMemberResponse> updateMemberRole(
       @PathVariable UUID id,
