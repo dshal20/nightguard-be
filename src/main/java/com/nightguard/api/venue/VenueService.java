@@ -54,6 +54,13 @@ public class VenueService {
   }
 
   public List<Venue> getAllForUser(String userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    if (user.getRole() == Role.ADMIN) {
+      return venueRepository.findAll();
+    }
+
     List<UUID> venueIds = venueMemberRepository.findByUserId(userId).stream()
         .map(VenueMember::getVenueId)
         .toList();
