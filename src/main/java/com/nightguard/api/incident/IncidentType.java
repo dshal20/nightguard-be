@@ -1,0 +1,15 @@
+package com.nightguard.api.incident;
+
+public enum IncidentType {
+  VERBAL_HARASSMENT,
+  SEXUAL_HARASSMENT,
+  PHYSICAL_ASSAULT,
+  THREAT,
+  STALKING,
+  THEFT,
+  DRUG_RELATED,
+  TRESPASSING,
+  DISORDERLY_CONDUCT,
+  VANDALISM,
+  OTHER
+}
