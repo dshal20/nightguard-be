@@ -22,6 +22,12 @@ public class UserService {
     });
   }
 
+  public User getByEmail(String email) {
+    return userRepository.findByEmail(email)
+        .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+            org.springframework.http.HttpStatus.NOT_FOUND));
+  }
+
   public User update(String uid, String email, UpdateUserRequest request) {
     User user = findOrCreate(uid, email);
     if (request.getFirstName() != null)
