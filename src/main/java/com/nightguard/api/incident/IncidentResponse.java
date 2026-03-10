@@ -4,10 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import com.nightguard.api.dto.UserResponse;
+import com.nightguard.api.user.User;
+
 public class IncidentResponse {
   private UUID id;
   private UUID venueId;
-  private String reporterId;
+  private UserResponse reporter;
   private IncidentType type;
   private IncidentSeverity severity;
   private String description;
@@ -15,11 +18,11 @@ public class IncidentResponse {
   private Instant createdAt;
   private Instant updatedAt;
 
-  public static IncidentResponse from(Incident incident) {
+  public static IncidentResponse from(Incident incident, User reporter) {
     IncidentResponse res = new IncidentResponse();
     res.id = incident.getId();
     res.venueId = incident.getVenueId();
-    res.reporterId = incident.getReporterId();
+    res.reporter = UserResponse.fromUser(reporter);
     res.type = incident.getType();
     res.severity = incident.getSeverity();
     res.description = incident.getDescription();
@@ -31,7 +34,7 @@ public class IncidentResponse {
 
   public UUID getId() { return id; }
   public UUID getVenueId() { return venueId; }
-  public String getReporterId() { return reporterId; }
+  public UserResponse getReporter() { return reporter; }
   public IncidentType getType() { return type; }
   public IncidentSeverity getSeverity() { return severity; }
   public String getDescription() { return description; }

@@ -26,7 +26,7 @@ public class IncidentService {
     this.userRepository = userRepository;
   }
 
-  public Incident create(CreateIncidentRequest request, String reporterId) {
+  public IncidentResponse create(CreateIncidentRequest request, String reporterId) {
     boolean isAdmin = isAdmin(reporterId);
     boolean isMember = venueMemberRepository.findByVenueIdAndUserId(request.getVenueId(), reporterId).isPresent();
     if (!isAdmin && !isMember) {
@@ -40,19 +40,21 @@ public class IncidentService {
     incident.setSeverity(request.getSeverity());
     incident.setDescription(request.getDescription());
     incident.setKeywords(request.getKeywords());
-    return incidentRepository.save(incident);
+    return toResponse(incidentRepository.save(incident));
   }
 
-  public List<Incident> getByVenue(UUID venueId, String requestingUserId) {
+  public List<IncidentResponse> getByVenue(UUID venueId, String requestingUserId) {
     boolean isAdmin = isAdmin(requestingUserId);
     boolean isMember = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId).isPresent();
     if (!isAdmin && !isMember) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
-    return incidentRepository.findByVenueId(venueId);
+    return incidentRepository.findByVenueId(venueId).stream()
+        .map(this::toResponse)
+        .toList();
   }
 
-  public Incident getById(UUID id, String requestingUserId) {
+  public IncidentResponse getById(UUID id, String requestingUserId) {
     Incident incident = incidentRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -62,7 +64,13 @@ public class IncidentService {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
-    return incident;
+    return toResponse(incident);
+  }
+
+  private IncidentResponse toResponse(Incident incident) {
+    User reporter = userRepository.findById(incident.getReporterId())
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+    return IncidentResponse.from(incident, reporter);
   }
 
   private boolean isAdmin(String userId) {

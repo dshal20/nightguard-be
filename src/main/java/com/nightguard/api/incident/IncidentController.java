@@ -27,25 +27,20 @@ public class IncidentController {
   public ResponseEntity<IncidentResponse> createIncident(
       @RequestBody CreateIncidentRequest request,
       Authentication authentication) {
-    Incident incident = incidentService.create(request, authentication.getName());
-    return ResponseEntity.ok(IncidentResponse.from(incident));
+    return ResponseEntity.ok(incidentService.create(request, authentication.getName()));
   }
 
   @GetMapping
   public ResponseEntity<List<IncidentResponse>> getIncidents(
       @RequestParam UUID venueId,
       Authentication authentication) {
-    List<IncidentResponse> incidents = incidentService.getByVenue(venueId, authentication.getName()).stream()
-        .map(IncidentResponse::from)
-        .toList();
-    return ResponseEntity.ok(incidents);
+    return ResponseEntity.ok(incidentService.getByVenue(venueId, authentication.getName()));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<IncidentResponse> getIncident(
       @PathVariable UUID id,
       Authentication authentication) {
-    Incident incident = incidentService.getById(id, authentication.getName());
-    return ResponseEntity.ok(IncidentResponse.from(incident));
+    return ResponseEntity.ok(incidentService.getById(id, authentication.getName()));
   }
 }
