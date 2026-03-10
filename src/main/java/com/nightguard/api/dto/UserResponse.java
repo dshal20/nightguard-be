@@ -1,5 +1,6 @@
 package com.nightguard.api.dto;
 
+import com.nightguard.api.user.Role;
 import com.nightguard.api.user.User;
 
 public class UserResponse {
@@ -8,6 +9,7 @@ public class UserResponse {
   private String lastName;
   private String email;
   private String phoneNumber;
+  private Role role;
 
   public static UserResponse fromUser(User user) {
     UserResponse dto = new UserResponse();
@@ -16,6 +18,7 @@ public class UserResponse {
     dto.setLastName(user.getLastName());
     dto.setEmail(user.getEmail());
     dto.setPhoneNumber(user.getPhoneNumber());
+    dto.setRole(user.getRole());
     return dto;
   }
 
@@ -33,4 +36,7 @@ public class UserResponse {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public Role getRole() { return role; }
+  public void setRole(Role role) { this.role = role; }
 }
