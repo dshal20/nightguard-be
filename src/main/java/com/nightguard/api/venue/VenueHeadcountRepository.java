@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VenueHeadcountRepository extends JpaRepository<VenueHeadcount, UUID> {
 
-  List<VenueHeadcount> findByVenueIdOrderByCreatedAtDesc(UUID venueId);
+  List<VenueHeadcount> findByVenueIdOrderByCreatedAtAsc(UUID venueId);
 }

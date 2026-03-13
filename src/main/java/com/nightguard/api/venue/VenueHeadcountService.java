@@ -1,7 +1,10 @@
 package com.nightguard.api.venue;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,13 +32,26 @@ public class VenueHeadcountService {
     this.userRepository = userRepository;
   }
 
-  public List<VenueHeadcount> getHeadcounts(UUID venueId, String requestingUserId) {
+  public List<VenueHeadcountResponse> getHeadcounts(UUID venueId, String requestingUserId) {
     assertVenueExists(venueId);
     assertMemberOrAdmin(venueId, requestingUserId);
-    return venueHeadcountRepository.findByVenueIdOrderByCreatedAtDesc(venueId);
+
+    List<VenueHeadcount> records = venueHeadcountRepository.findByVenueIdOrderByCreatedAtAsc(venueId);
+
+    Set<String> userIds = records.stream()
+        .map(VenueHeadcount::getRecordedBy)
+        .filter(id -> id != null)
+        .collect(Collectors.toSet());
+
+    Map<String, User> usersById = userRepository.findAllById(userIds).stream()
+        .collect(Collectors.toMap(User::getId, u -> u));
+
+    return records.stream()
+        .map(r -> VenueHeadcountResponse.from(r, usersById.get(r.getRecordedBy())))
+        .toList();
   }
 
-  public VenueHeadcount addHeadcount(UUID venueId, AddHeadcountRequest request, String requestingUserId) {
+  public VenueHeadcountResponse addHeadcount(UUID venueId, AddHeadcountRequest request, String requestingUserId) {
     assertVenueExists(venueId);
     assertMemberOrAdmin(venueId, requestingUserId);
 
@@ -44,7 +60,9 @@ public class VenueHeadcountService {
     record.setHeadcount(request.getHeadcount());
     record.setRecordedBy(requestingUserId);
 
-    return venueHeadcountRepository.save(record);
+    VenueHeadcount saved = venueHeadcountRepository.save(record);
+    User user = userRepository.findById(requestingUserId).orElse(null);
+    return VenueHeadcountResponse.from(saved, user);
   }
 
   private void assertVenueExists(UUID venueId) {

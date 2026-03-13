@@ -114,11 +114,7 @@ public class VenueController {
   public ResponseEntity<List<VenueHeadcountResponse>> getHeadcounts(
       @PathVariable UUID id,
       Authentication authentication) {
-    List<VenueHeadcountResponse> headcounts = venueHeadcountService.getHeadcounts(id, authentication.getName())
-        .stream()
-        .map(VenueHeadcountResponse::from)
-        .toList();
-    return ResponseEntity.ok(headcounts);
+    return ResponseEntity.ok(venueHeadcountService.getHeadcounts(id, authentication.getName()));
   }
 
   @PostMapping("/{id}/headcount")
@@ -126,7 +122,6 @@ public class VenueController {
       @PathVariable UUID id,
       @RequestBody AddHeadcountRequest request,
       Authentication authentication) {
-    VenueHeadcount headcount = venueHeadcountService.addHeadcount(id, request, authentication.getName());
-    return ResponseEntity.ok(VenueHeadcountResponse.from(headcount));
+    return ResponseEntity.ok(venueHeadcountService.addHeadcount(id, request, authentication.getName()));
   }
 }
