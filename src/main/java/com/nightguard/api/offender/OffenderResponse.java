@@ -1,7 +1,10 @@
 package com.nightguard.api.offender;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+
+import com.nightguard.api.incident.IncidentResponse;
 
 public class OffenderResponse {
 
@@ -16,8 +19,13 @@ public class OffenderResponse {
   private String notes;
   private Instant createdAt;
   private Instant updatedAt;
+  private List<IncidentResponse> incidents;
 
   public static OffenderResponse from(Offender offender) {
+    return from(offender, null);
+  }
+
+  public static OffenderResponse from(Offender offender, List<IncidentResponse> incidents) {
     OffenderResponse dto = new OffenderResponse();
     dto.setId(offender.getId());
     dto.setVenueId(offender.getVenueId());
@@ -30,6 +38,7 @@ public class OffenderResponse {
     dto.setNotes(offender.getNotes());
     dto.setCreatedAt(offender.getCreatedAt());
     dto.setUpdatedAt(offender.getUpdatedAt());
+    dto.setIncidents(incidents);
     return dto;
   }
 
@@ -65,4 +74,7 @@ public class OffenderResponse {
 
   public Instant getUpdatedAt() { return updatedAt; }
   public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+
+  public List<IncidentResponse> getIncidents() { return incidents; }
+  public void setIncidents(List<IncidentResponse> incidents) { this.incidents = incidents; }
 }

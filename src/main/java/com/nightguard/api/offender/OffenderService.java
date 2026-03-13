@@ -7,10 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.nightguard.api.incident.IncidentRepository;
+import com.nightguard.api.incident.IncidentResponse;
 import com.nightguard.api.user.Role;
 import com.nightguard.api.user.User;
 import com.nightguard.api.user.UserRepository;
 import com.nightguard.api.venue.VenueMemberRepository;
+import com.nightguard.api.venue.VenueRole;
 
 @Service
 public class OffenderService {
@@ -18,13 +21,16 @@ public class OffenderService {
   private final OffenderRepository offenderRepository;
   private final VenueMemberRepository venueMemberRepository;
   private final UserRepository userRepository;
+  private final IncidentRepository incidentRepository;
 
   public OffenderService(OffenderRepository offenderRepository,
       VenueMemberRepository venueMemberRepository,
-      UserRepository userRepository) {
+      UserRepository userRepository,
+      IncidentRepository incidentRepository) {
     this.offenderRepository = offenderRepository;
     this.venueMemberRepository = venueMemberRepository;
     this.userRepository = userRepository;
+    this.incidentRepository = incidentRepository;
   }
 
   public OffenderResponse create(CreateOffenderRequest request, String requestingUserId) {
@@ -54,7 +60,19 @@ public class OffenderService {
     Offender offender = offenderRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     assertMemberOrAdmin(offender.getVenueId(), requestingUserId);
-    return OffenderResponse.from(offender);
+
+    List<IncidentResponse> incidents = incidentRepository.findByOffenderId(id).stream()
+        .map(incident -> {
+          User reporter = userRepository.findById(incident.getReporterId())
+              .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
+          return com.nightguard.api.incident.IncidentResponse.from(incident, reporter,
+              offenderRepository.findAllById(incident.getOffenderIds()).stream()
+                  .map(OffenderResponse::from)
+                  .toList());
+        })
+        .toList();
+
+    return OffenderResponse.from(offender, incidents);
   }
 
   public OffenderResponse update(UUID id, UpdateOffenderRequest request, String requestingUserId) {
@@ -93,7 +111,7 @@ public class OffenderService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     if (user.getRole() == Role.ADMIN) return;
     boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, userId)
-        .map(m -> m.getRole() == com.nightguard.api.venue.VenueRole.MANAGER)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
         .orElse(false);
     if (!isManager) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
   }
