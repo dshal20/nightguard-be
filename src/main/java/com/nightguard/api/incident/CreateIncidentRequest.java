@@ -9,19 +9,53 @@ public class CreateIncidentRequest {
   private IncidentSeverity severity;
   private String description;
   private List<String> keywords;
+  public IncidentStatus status;
 
-  public UUID getVenueId() { return venueId; }
-  public void setVenueId(UUID venueId) { this.venueId = venueId; }
+  public UUID getVenueId() {
+    return venueId;
+  }
 
-  public IncidentType getType() { return type; }
-  public void setType(IncidentType type) { this.type = type; }
+  public void setVenueId(UUID venueId) {
+    this.venueId = venueId;
+  }
 
-  public IncidentSeverity getSeverity() { return severity; }
-  public void setSeverity(IncidentSeverity severity) { this.severity = severity; }
+  public IncidentType getType() {
+    return type;
+  }
 
-  public String getDescription() { return description; }
-  public void setDescription(String description) { this.description = description; }
+  public void setType(IncidentType type) {
+    this.type = type;
+  }
 
-  public List<String> getKeywords() { return keywords; }
-  public void setKeywords(List<String> keywords) { this.keywords = keywords; }
+  public IncidentSeverity getSeverity() {
+    return severity;
+  }
+
+  public void setSeverity(IncidentSeverity severity) {
+    this.severity = severity;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public List<String> getKeywords() {
+    return keywords;
+  }
+
+  public void setKeywords(List<String> keywords) {
+    this.keywords = keywords;
+  }
+
+  public IncidentStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(IncidentStatus status) {
+    this.status = status;
+  }
 }

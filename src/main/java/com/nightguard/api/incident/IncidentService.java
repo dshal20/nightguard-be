@@ -40,6 +40,7 @@ public class IncidentService {
     incident.setSeverity(request.getSeverity());
     incident.setDescription(request.getDescription());
     incident.setKeywords(request.getKeywords());
+    incident.setStatus(request.getStatus());
     return toResponse(incidentRepository.save(incident));
   }
 
@@ -52,6 +53,25 @@ public class IncidentService {
     return incidentRepository.findByVenueId(venueId).stream()
         .map(this::toResponse)
         .toList();
+  }
+
+  public IncidentResponse update(UUID id, UpdateIncidentRequest request, String requestingUserId) {
+    Incident incident = incidentRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    boolean isAdmin = isAdmin(requestingUserId);
+    boolean isMember = venueMemberRepository.findByVenueIdAndUserId(incident.getVenueId(), requestingUserId).isPresent();
+    if (!isAdmin && !isMember) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    if (request.getType() != null) incident.setType(request.getType());
+    if (request.getSeverity() != null) incident.setSeverity(request.getSeverity());
+    if (request.getDescription() != null) incident.setDescription(request.getDescription());
+    if (request.getKeywords() != null) incident.setKeywords(request.getKeywords());
+    if (request.getStatus() != null) incident.setStatus(request.getStatus());
+
+    return toResponse(incidentRepository.save(incident));
   }
 
   public IncidentResponse getById(UUID id, String requestingUserId) {
