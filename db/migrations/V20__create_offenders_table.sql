@@ -1,0 +1,8 @@
+ALTER TABLE venue_offenders RENAME TO offenders;
+
+ALTER TABLE offenders
+  ADD COLUMN created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  ADD COLUMN updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
+ALTER TABLE incidents
+  ADD COLUMN offender_ids UUID[] NOT NULL DEFAULT '{}';
