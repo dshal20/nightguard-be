@@ -46,7 +46,8 @@ public class Incident {
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
-  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false, columnDefinition = "incident_status")
   private IncidentStatus status;
 
   @Column(name = "updated_at", nullable = false)
