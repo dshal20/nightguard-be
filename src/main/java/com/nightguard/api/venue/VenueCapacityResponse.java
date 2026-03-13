@@ -9,7 +9,6 @@ public class VenueCapacityResponse {
   private UUID venueId;
   private String updatedBy;
   private Integer capacity;
-  private Integer currentOccupancy;
   private Instant createdAt;
   private Instant updatedAt;
 
@@ -19,7 +18,6 @@ public class VenueCapacityResponse {
     dto.setVenueId(capacity.getVenueId());
     dto.setUpdatedBy(capacity.getUpdatedBy());
     dto.setCapacity(capacity.getCapacity());
-    dto.setCurrentOccupancy(capacity.getCurrentOccupancy());
     dto.setCreatedAt(capacity.getCreatedAt());
     dto.setUpdatedAt(capacity.getUpdatedAt());
     return dto;
@@ -36,9 +34,6 @@ public class VenueCapacityResponse {
 
   public Integer getCapacity() { return capacity; }
   public void setCapacity(Integer capacity) { this.capacity = capacity; }
-
-  public Integer getCurrentOccupancy() { return currentOccupancy; }
-  public void setCurrentOccupancy(Integer currentOccupancy) { this.currentOccupancy = currentOccupancy; }
 
   public Instant getCreatedAt() { return createdAt; }
   public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

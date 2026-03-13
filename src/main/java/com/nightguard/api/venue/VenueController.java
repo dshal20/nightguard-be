@@ -3,15 +3,15 @@ package com.nightguard.api.venue;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,10 +23,13 @@ public class VenueController {
 
   private final VenueService venueService;
   private final VenueCapacityService venueCapacityService;
+  private final VenueHeadcountService venueHeadcountService;
 
-  public VenueController(VenueService venueService, VenueCapacityService venueCapacityService) {
+  public VenueController(VenueService venueService, VenueCapacityService venueCapacityService,
+      VenueHeadcountService venueHeadcountService) {
     this.venueService = venueService;
     this.venueCapacityService = venueCapacityService;
+    this.venueHeadcountService = venueHeadcountService;
   }
 
   @PostMapping
@@ -107,12 +110,23 @@ public class VenueController {
     return ResponseEntity.ok(VenueCapacityResponse.from(capacity));
   }
 
-  @PatchMapping("/{id}/capacity")
-  public ResponseEntity<VenueCapacityResponse> updateOccupancy(
+  @GetMapping("/{id}/headcount")
+  public ResponseEntity<List<VenueHeadcountResponse>> getHeadcounts(
       @PathVariable UUID id,
-      @RequestBody UpdateOccupancyRequest request,
       Authentication authentication) {
-    VenueCapacity capacity = venueCapacityService.updateOccupancy(id, request, authentication.getName());
-    return ResponseEntity.ok(VenueCapacityResponse.from(capacity));
+    List<VenueHeadcountResponse> headcounts = venueHeadcountService.getHeadcounts(id, authentication.getName())
+        .stream()
+        .map(VenueHeadcountResponse::from)
+        .toList();
+    return ResponseEntity.ok(headcounts);
+  }
+
+  @PostMapping("/{id}/headcount")
+  public ResponseEntity<VenueHeadcountResponse> addHeadcount(
+      @PathVariable UUID id,
+      @RequestBody AddHeadcountRequest request,
+      Authentication authentication) {
+    VenueHeadcount headcount = venueHeadcountService.addHeadcount(id, request, authentication.getName());
+    return ResponseEntity.ok(VenueHeadcountResponse.from(headcount));
   }
 }

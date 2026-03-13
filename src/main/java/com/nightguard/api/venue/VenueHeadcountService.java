@@ -1,5 +1,6 @@
 package com.nightguard.api.venue;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -11,42 +12,39 @@ import com.nightguard.api.user.User;
 import com.nightguard.api.user.UserRepository;
 
 @Service
-public class VenueCapacityService {
+public class VenueHeadcountService {
 
-  private final VenueCapacityRepository venueCapacityRepository;
+  private final VenueHeadcountRepository venueHeadcountRepository;
   private final VenueMemberRepository venueMemberRepository;
   private final VenueRepository venueRepository;
   private final UserRepository userRepository;
 
-  public VenueCapacityService(VenueCapacityRepository venueCapacityRepository,
+  public VenueHeadcountService(VenueHeadcountRepository venueHeadcountRepository,
       VenueMemberRepository venueMemberRepository,
       VenueRepository venueRepository,
       UserRepository userRepository) {
-    this.venueCapacityRepository = venueCapacityRepository;
+    this.venueHeadcountRepository = venueHeadcountRepository;
     this.venueMemberRepository = venueMemberRepository;
     this.venueRepository = venueRepository;
     this.userRepository = userRepository;
   }
 
-  public VenueCapacity getCapacity(UUID venueId, String requestingUserId) {
+  public List<VenueHeadcount> getHeadcounts(UUID venueId, String requestingUserId) {
     assertVenueExists(venueId);
     assertMemberOrAdmin(venueId, requestingUserId);
-    return venueCapacityRepository.findByVenueId(venueId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Capacity not set for this venue"));
+    return venueHeadcountRepository.findByVenueIdOrderByCreatedAtDesc(venueId);
   }
 
-  public VenueCapacity setCapacity(UUID venueId, SetCapacityRequest request, String requestingUserId) {
+  public VenueHeadcount addHeadcount(UUID venueId, AddHeadcountRequest request, String requestingUserId) {
     assertVenueExists(venueId);
-    assertManagerOrAdmin(venueId, requestingUserId);
+    assertMemberOrAdmin(venueId, requestingUserId);
 
-    VenueCapacity record = venueCapacityRepository.findByVenueId(venueId)
-        .orElseGet(VenueCapacity::new);
-
+    VenueHeadcount record = new VenueHeadcount();
     record.setVenueId(venueId);
-    record.setUpdatedBy(requestingUserId);
-    record.setCapacity(request.getCapacity());
+    record.setHeadcount(request.getHeadcount());
+    record.setRecordedBy(requestingUserId);
 
-    return venueCapacityRepository.save(record);
+    return venueHeadcountRepository.save(record);
   }
 
   private void assertVenueExists(UUID venueId) {
@@ -60,15 +58,5 @@ public class VenueCapacityService {
     if (user.getRole() == Role.ADMIN) return;
     venueMemberRepository.findByVenueIdAndUserId(venueId, userId)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
-  }
-
-  private void assertManagerOrAdmin(UUID venueId, String userId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-    if (user.getRole() == Role.ADMIN) return;
-    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, userId)
-        .map(m -> m.getRole() == VenueRole.MANAGER)
-        .orElse(false);
-    if (!isManager) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
   }
 }
