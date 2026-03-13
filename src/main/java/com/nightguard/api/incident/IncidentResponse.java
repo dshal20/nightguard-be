@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.nightguard.api.dto.UserResponse;
-import com.nightguard.api.offender.OffenderResponse;
 import com.nightguard.api.user.User;
 
 public class IncidentResponse {
@@ -17,12 +16,12 @@ public class IncidentResponse {
   private IncidentSeverity severity;
   private String description;
   private List<String> keywords;
-  private List<OffenderResponse> offenders;
+  private List<UUID> offenderIds;
   private IncidentStatus status;
   private Instant createdAt;
   private Instant updatedAt;
 
-  public static IncidentResponse from(Incident incident, User reporter, List<OffenderResponse> offenders) {
+  public static IncidentResponse from(Incident incident, User reporter) {
     IncidentResponse res = new IncidentResponse();
     res.id = incident.getId();
     res.venueId = incident.getVenueId();
@@ -31,7 +30,7 @@ public class IncidentResponse {
     res.severity = incident.getSeverity();
     res.description = incident.getDescription();
     res.keywords = incident.getKeywords();
-    res.offenders = offenders;
+    res.offenderIds = incident.getOffenderIds();
     res.status = incident.getStatus();
     res.createdAt = incident.getCreatedAt();
     res.updatedAt = incident.getUpdatedAt();
@@ -45,7 +44,7 @@ public class IncidentResponse {
   public IncidentSeverity getSeverity() { return severity; }
   public String getDescription() { return description; }
   public List<String> getKeywords() { return keywords; }
-  public List<OffenderResponse> getOffenders() { return offenders; }
+  public List<UUID> getOffenderIds() { return offenderIds; }
   public IncidentStatus getStatus() { return status; }
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }

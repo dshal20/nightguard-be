@@ -65,10 +65,7 @@ public class OffenderService {
         .map(incident -> {
           User reporter = userRepository.findById(incident.getReporterId())
               .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
-          return com.nightguard.api.incident.IncidentResponse.from(incident, reporter,
-              offenderRepository.findAllById(incident.getOffenderIds()).stream()
-                  .map(OffenderResponse::from)
-                  .toList());
+          return IncidentResponse.from(incident, reporter);
         })
         .toList();
 

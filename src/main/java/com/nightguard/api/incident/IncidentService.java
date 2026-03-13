@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.nightguard.api.offender.OffenderRepository;
-import com.nightguard.api.offender.OffenderResponse;
 import com.nightguard.api.user.Role;
 import com.nightguard.api.user.User;
 import com.nightguard.api.user.UserRepository;
@@ -20,16 +18,13 @@ public class IncidentService {
   private final IncidentRepository incidentRepository;
   private final VenueMemberRepository venueMemberRepository;
   private final UserRepository userRepository;
-  private final OffenderRepository offenderRepository;
 
   public IncidentService(IncidentRepository incidentRepository,
       VenueMemberRepository venueMemberRepository,
-      UserRepository userRepository,
-      OffenderRepository offenderRepository) {
+      UserRepository userRepository) {
     this.incidentRepository = incidentRepository;
     this.venueMemberRepository = venueMemberRepository;
     this.userRepository = userRepository;
-    this.offenderRepository = offenderRepository;
   }
 
   public IncidentResponse create(CreateIncidentRequest request, String reporterId) {
@@ -99,13 +94,7 @@ public class IncidentService {
   private IncidentResponse toResponse(Incident incident) {
     User reporter = userRepository.findById(incident.getReporterId())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
-
-    List<OffenderResponse> offenders = offenderRepository.findAllById(incident.getOffenderIds())
-        .stream()
-        .map(OffenderResponse::from)
-        .toList();
-
-    return IncidentResponse.from(incident, reporter, offenders);
+    return IncidentResponse.from(incident, reporter);
   }
 
   private boolean isAdmin(String userId) {
