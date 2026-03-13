@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,5 +43,13 @@ public class IncidentController {
       @PathVariable UUID id,
       Authentication authentication) {
     return ResponseEntity.ok(incidentService.getById(id, authentication.getName()));
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<IncidentResponse> updateIncident(
+      @PathVariable UUID id,
+      @RequestBody UpdateIncidentRequest request,
+      Authentication authentication) {
+    return ResponseEntity.ok(incidentService.update(id, request, authentication.getName()));
   }
 }
