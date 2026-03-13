@@ -11,6 +11,6 @@ public interface IncidentRepository extends JpaRepository<Incident, UUID> {
 
   List<Incident> findByVenueId(UUID venueId);
 
-  @Query(value = "SELECT * FROM incidents WHERE CAST(:offenderId AS uuid) = ANY(offender_ids)", nativeQuery = true)
-  List<Incident> findByOffenderId(@Param("offenderId") UUID offenderId);
+  @Query(value = "SELECT id::text FROM incidents WHERE CAST(:offenderId AS uuid) = ANY(offender_ids)", nativeQuery = true)
+  List<String> findIdsByOffenderId(@Param("offenderId") UUID offenderId);
 }

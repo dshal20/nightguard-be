@@ -60,16 +60,25 @@ public class OffenderService {
     Offender offender = offenderRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     assertMemberOrAdmin(offender.getVenueId(), requestingUserId);
+    return OffenderResponse.from(offender);
+  }
 
-    List<IncidentResponse> incidents = incidentRepository.findByOffenderId(id).stream()
+  public List<IncidentResponse> getIncidents(UUID offenderId, String requestingUserId) {
+    Offender offender = offenderRepository.findById(offenderId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    assertMemberOrAdmin(offender.getVenueId(), requestingUserId);
+
+    List<UUID> incidentIds = incidentRepository.findIdsByOffenderId(offenderId).stream()
+        .map(UUID::fromString)
+        .toList();
+
+    return incidentRepository.findAllById(incidentIds).stream()
         .map(incident -> {
           User reporter = userRepository.findById(incident.getReporterId())
               .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
           return IncidentResponse.from(incident, reporter);
         })
         .toList();
-
-    return OffenderResponse.from(offender, incidents);
   }
 
   public OffenderResponse update(UUID id, UpdateOffenderRequest request, String requestingUserId) {

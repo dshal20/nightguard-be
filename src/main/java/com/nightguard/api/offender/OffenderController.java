@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nightguard.api.incident.IncidentResponse;
+
 @RestController
 @RequestMapping("/offenders")
 public class OffenderController {
@@ -54,6 +56,13 @@ public class OffenderController {
       @RequestBody UpdateOffenderRequest request,
       Authentication authentication) {
     return ResponseEntity.ok(offenderService.update(id, request, authentication.getName()));
+  }
+
+  @GetMapping("/{id}/incidents")
+  public ResponseEntity<List<IncidentResponse>> getOffenderIncidents(
+      @PathVariable UUID id,
+      Authentication authentication) {
+    return ResponseEntity.ok(offenderService.getIncidents(id, authentication.getName()));
   }
 
   @DeleteMapping("/{id}")
