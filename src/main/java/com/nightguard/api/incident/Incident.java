@@ -1,6 +1,7 @@
 package com.nightguard.api.incident;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,9 @@ public class Incident {
   @Column(name = "keywords", columnDefinition = "TEXT[]")
   private List<String> keywords;
 
+  @Column(name = "offender_ids", columnDefinition = "UUID[]")
+  private List<UUID> offenderIds = new ArrayList<>();
+
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
@@ -58,6 +62,7 @@ public class Incident {
     Instant now = Instant.now();
     this.createdAt = now;
     this.updatedAt = now;
+    if (this.status == null) this.status = IncidentStatus.ACTIVE;
   }
 
   @PreUpdate
@@ -65,75 +70,33 @@ public class Incident {
     this.updatedAt = Instant.now();
   }
 
-  public UUID getId() {
-    return id;
-  }
+  public UUID getId() { return id; }
+  public void setId(UUID id) { this.id = id; }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
+  public UUID getVenueId() { return venueId; }
+  public void setVenueId(UUID venueId) { this.venueId = venueId; }
 
-  public UUID getVenueId() {
-    return venueId;
-  }
+  public String getReporterId() { return reporterId; }
+  public void setReporterId(String reporterId) { this.reporterId = reporterId; }
 
-  public void setVenueId(UUID venueId) {
-    this.venueId = venueId;
-  }
+  public IncidentType getType() { return type; }
+  public void setType(IncidentType type) { this.type = type; }
 
-  public String getReporterId() {
-    return reporterId;
-  }
+  public IncidentSeverity getSeverity() { return severity; }
+  public void setSeverity(IncidentSeverity severity) { this.severity = severity; }
 
-  public void setReporterId(String reporterId) {
-    this.reporterId = reporterId;
-  }
+  public String getDescription() { return description; }
+  public void setDescription(String description) { this.description = description; }
 
-  public IncidentType getType() {
-    return type;
-  }
+  public List<String> getKeywords() { return keywords; }
+  public void setKeywords(List<String> keywords) { this.keywords = keywords; }
 
-  public void setType(IncidentType type) {
-    this.type = type;
-  }
+  public List<UUID> getOffenderIds() { return offenderIds; }
+  public void setOffenderIds(List<UUID> offenderIds) { this.offenderIds = offenderIds; }
 
-  public IncidentSeverity getSeverity() {
-    return severity;
-  }
+  public IncidentStatus getStatus() { return status; }
+  public void setStatus(IncidentStatus status) { this.status = status; }
 
-  public void setSeverity(IncidentSeverity severity) {
-    this.severity = severity;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public List<String> getKeywords() {
-    return keywords;
-  }
-
-  public void setKeywords(List<String> keywords) {
-    this.keywords = keywords;
-  }
-
-  public IncidentStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(IncidentStatus status) {
-    this.status = status;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
-
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
+  public Instant getCreatedAt() { return createdAt; }
+  public Instant getUpdatedAt() { return updatedAt; }
 }

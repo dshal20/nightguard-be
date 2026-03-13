@@ -8,6 +8,7 @@ import com.nightguard.api.dto.UserResponse;
 import com.nightguard.api.user.User;
 
 public class IncidentResponse {
+
   private UUID id;
   private UUID venueId;
   private UserResponse reporter;
@@ -15,9 +16,10 @@ public class IncidentResponse {
   private IncidentSeverity severity;
   private String description;
   private List<String> keywords;
+  private List<UUID> offenderIds;
+  private IncidentStatus status;
   private Instant createdAt;
   private Instant updatedAt;
-  private IncidentStatus status;
 
   public static IncidentResponse from(Incident incident, User reporter) {
     IncidentResponse res = new IncidentResponse();
@@ -28,49 +30,22 @@ public class IncidentResponse {
     res.severity = incident.getSeverity();
     res.description = incident.getDescription();
     res.keywords = incident.getKeywords();
+    res.offenderIds = incident.getOffenderIds();
     res.status = incident.getStatus();
     res.createdAt = incident.getCreatedAt();
     res.updatedAt = incident.getUpdatedAt();
     return res;
   }
 
-  public UUID getId() {
-    return id;
-  }
-
-  public UUID getVenueId() {
-    return venueId;
-  }
-
-  public UserResponse getReporter() {
-    return reporter;
-  }
-
-  public IncidentType getType() {
-    return type;
-  }
-
-  public IncidentSeverity getSeverity() {
-    return severity;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public List<String> getKeywords() {
-    return keywords;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
-  }
-
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public IncidentStatus getStatus() {
-    return status;
-  }
+  public UUID getId() { return id; }
+  public UUID getVenueId() { return venueId; }
+  public UserResponse getReporter() { return reporter; }
+  public IncidentType getType() { return type; }
+  public IncidentSeverity getSeverity() { return severity; }
+  public String getDescription() { return description; }
+  public List<String> getKeywords() { return keywords; }
+  public List<UUID> getOffenderIds() { return offenderIds; }
+  public IncidentStatus getStatus() { return status; }
+  public Instant getCreatedAt() { return createdAt; }
+  public Instant getUpdatedAt() { return updatedAt; }
 }

@@ -1,6 +1,7 @@
 package com.nightguard.api.incident;
 
 import java.util.List;
+import java.util.UUID;
 
 public class UpdateIncidentRequest {
 
@@ -9,6 +10,7 @@ public class UpdateIncidentRequest {
   private String description;
   private List<String> keywords;
   private IncidentStatus status;
+  private List<UUID> offenderIds;
 
   public IncidentType getType() { return type; }
   public void setType(IncidentType type) { this.type = type; }
@@ -24,4 +26,7 @@ public class UpdateIncidentRequest {
 
   public IncidentStatus getStatus() { return status; }
   public void setStatus(IncidentStatus status) { this.status = status; }
+
+  public List<UUID> getOffenderIds() { return offenderIds; }
+  public void setOffenderIds(List<UUID> offenderIds) { this.offenderIds = offenderIds; }
 }

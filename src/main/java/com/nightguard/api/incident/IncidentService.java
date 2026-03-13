@@ -19,7 +19,8 @@ public class IncidentService {
   private final VenueMemberRepository venueMemberRepository;
   private final UserRepository userRepository;
 
-  public IncidentService(IncidentRepository incidentRepository, VenueMemberRepository venueMemberRepository,
+  public IncidentService(IncidentRepository incidentRepository,
+      VenueMemberRepository venueMemberRepository,
       UserRepository userRepository) {
     this.incidentRepository = incidentRepository;
     this.venueMemberRepository = venueMemberRepository;
@@ -41,6 +42,8 @@ public class IncidentService {
     incident.setDescription(request.getDescription());
     incident.setKeywords(request.getKeywords());
     incident.setStatus(request.getStatus());
+    incident.setOffenderIds(request.getOffenderIds());
+
     return toResponse(incidentRepository.save(incident));
   }
 
@@ -53,6 +56,19 @@ public class IncidentService {
     return incidentRepository.findByVenueId(venueId).stream()
         .map(this::toResponse)
         .toList();
+  }
+
+  public IncidentResponse getById(UUID id, String requestingUserId) {
+    Incident incident = incidentRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+    boolean isAdmin = isAdmin(requestingUserId);
+    boolean isMember = venueMemberRepository.findByVenueIdAndUserId(incident.getVenueId(), requestingUserId).isPresent();
+    if (!isAdmin && !isMember) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    return toResponse(incident);
   }
 
   public IncidentResponse update(UUID id, UpdateIncidentRequest request, String requestingUserId) {
@@ -70,21 +86,9 @@ public class IncidentService {
     if (request.getDescription() != null) incident.setDescription(request.getDescription());
     if (request.getKeywords() != null) incident.setKeywords(request.getKeywords());
     if (request.getStatus() != null) incident.setStatus(request.getStatus());
+    if (request.getOffenderIds() != null) incident.setOffenderIds(request.getOffenderIds());
 
     return toResponse(incidentRepository.save(incident));
-  }
-
-  public IncidentResponse getById(UUID id, String requestingUserId) {
-    Incident incident = incidentRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    boolean isAdmin = isAdmin(requestingUserId);
-    boolean isMember = venueMemberRepository.findByVenueIdAndUserId(incident.getVenueId(), requestingUserId).isPresent();
-    if (!isAdmin && !isMember) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-    }
-
-    return toResponse(incident);
   }
 
   private IncidentResponse toResponse(Incident incident) {
