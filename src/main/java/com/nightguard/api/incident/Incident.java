@@ -46,6 +46,9 @@ public class Incident {
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
+  @Column(name = "status", nullable = false)
+  private IncidentStatus status;
+
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt;
 
@@ -61,27 +64,75 @@ public class Incident {
     this.updatedAt = Instant.now();
   }
 
-  public UUID getId() { return id; }
-  public void setId(UUID id) { this.id = id; }
+  public UUID getId() {
+    return id;
+  }
 
-  public UUID getVenueId() { return venueId; }
-  public void setVenueId(UUID venueId) { this.venueId = venueId; }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-  public String getReporterId() { return reporterId; }
-  public void setReporterId(String reporterId) { this.reporterId = reporterId; }
+  public UUID getVenueId() {
+    return venueId;
+  }
 
-  public IncidentType getType() { return type; }
-  public void setType(IncidentType type) { this.type = type; }
+  public void setVenueId(UUID venueId) {
+    this.venueId = venueId;
+  }
 
-  public IncidentSeverity getSeverity() { return severity; }
-  public void setSeverity(IncidentSeverity severity) { this.severity = severity; }
+  public String getReporterId() {
+    return reporterId;
+  }
 
-  public String getDescription() { return description; }
-  public void setDescription(String description) { this.description = description; }
+  public void setReporterId(String reporterId) {
+    this.reporterId = reporterId;
+  }
 
-  public List<String> getKeywords() { return keywords; }
-  public void setKeywords(List<String> keywords) { this.keywords = keywords; }
+  public IncidentType getType() {
+    return type;
+  }
 
-  public Instant getCreatedAt() { return createdAt; }
-  public Instant getUpdatedAt() { return updatedAt; }
+  public void setType(IncidentType type) {
+    this.type = type;
+  }
+
+  public IncidentSeverity getSeverity() {
+    return severity;
+  }
+
+  public void setSeverity(IncidentSeverity severity) {
+    this.severity = severity;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public List<String> getKeywords() {
+    return keywords;
+  }
+
+  public void setKeywords(List<String> keywords) {
+    this.keywords = keywords;
+  }
+
+  public IncidentStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(IncidentStatus status) {
+    this.status = status;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
 }

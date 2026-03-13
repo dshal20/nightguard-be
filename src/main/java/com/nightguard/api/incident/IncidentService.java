@@ -40,6 +40,7 @@ public class IncidentService {
     incident.setSeverity(request.getSeverity());
     incident.setDescription(request.getDescription());
     incident.setKeywords(request.getKeywords());
+    incident.setStatus(request.getStatus());
     return toResponse(incidentRepository.save(incident));
   }
 

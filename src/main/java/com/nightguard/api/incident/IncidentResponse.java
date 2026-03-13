@@ -17,6 +17,7 @@ public class IncidentResponse {
   private List<String> keywords;
   private Instant createdAt;
   private Instant updatedAt;
+  private IncidentStatus status;
 
   public static IncidentResponse from(Incident incident, User reporter) {
     IncidentResponse res = new IncidentResponse();
@@ -27,18 +28,49 @@ public class IncidentResponse {
     res.severity = incident.getSeverity();
     res.description = incident.getDescription();
     res.keywords = incident.getKeywords();
+    res.status = incident.getStatus();
     res.createdAt = incident.getCreatedAt();
     res.updatedAt = incident.getUpdatedAt();
     return res;
   }
 
-  public UUID getId() { return id; }
-  public UUID getVenueId() { return venueId; }
-  public UserResponse getReporter() { return reporter; }
-  public IncidentType getType() { return type; }
-  public IncidentSeverity getSeverity() { return severity; }
-  public String getDescription() { return description; }
-  public List<String> getKeywords() { return keywords; }
-  public Instant getCreatedAt() { return createdAt; }
-  public Instant getUpdatedAt() { return updatedAt; }
+  public UUID getId() {
+    return id;
+  }
+
+  public UUID getVenueId() {
+    return venueId;
+  }
+
+  public UserResponse getReporter() {
+    return reporter;
+  }
+
+  public IncidentType getType() {
+    return type;
+  }
+
+  public IncidentSeverity getSeverity() {
+    return severity;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public List<String> getKeywords() {
+    return keywords;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public IncidentStatus getStatus() {
+    return status;
+  }
 }
