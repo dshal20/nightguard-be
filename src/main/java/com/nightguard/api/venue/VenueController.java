@@ -42,6 +42,11 @@ public class VenueController {
     return ResponseEntity.ok(venueService.getAllForUser(authentication.getName()));
   }
 
+  @GetMapping("/nearby")
+  public ResponseEntity<List<Venue>> getNearbyVenues() {
+    return ResponseEntity.ok(venueService.getNearbyVenues());
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<Venue> getVenue(@PathVariable UUID id) {
     return ResponseEntity.ok(venueService.getById(id));

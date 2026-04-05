@@ -40,6 +40,9 @@ public class Venue {
   @Column(name = "invite_code", nullable = false, unique = true, updatable = false)
   private String inviteCode;
 
+  @Column(name = "data_sharing_enabled", nullable = false)
+  private boolean dataSharingEnabled;
+
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
 
@@ -120,5 +123,13 @@ public class Venue {
 
   public void setInviteCode(String inviteCode) {
     this.inviteCode = inviteCode;
+  }
+
+  public boolean isDataSharingEnabled() {
+    return dataSharingEnabled;
+  }
+
+  public void setDataSharingEnabled(boolean dataSharingEnabled) {
+    this.dataSharingEnabled = dataSharingEnabled;
   }
 }
