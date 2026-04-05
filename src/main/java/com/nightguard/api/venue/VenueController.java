@@ -44,10 +44,14 @@ public class VenueController {
   }
 
   @GetMapping("/nearby")
-  public ResponseEntity<List<Venue>> getNearbyVenues(
-      @RequestParam double latitude,
-      @RequestParam double longitude) {
-    return ResponseEntity.ok(venueService.getNearbyVenues());
+  public ResponseEntity<List<NearbyVenueResponse>> getNearbyVenues(
+      @RequestParam String city,
+      @RequestParam String state,
+      @RequestParam(required = false) String zip) {
+    List<NearbyVenueResponse> venues = venueService.getNearbyVenues(city, state, zip).stream()
+        .map(NearbyVenueResponse::from)
+        .toList();
+    return ResponseEntity.ok(venues);
   }
 
   @GetMapping("/{id}")
