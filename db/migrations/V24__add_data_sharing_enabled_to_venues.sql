@@ -1,0 +1,1 @@
+ALTER TABLE venues ADD COLUMN data_sharing_enabled BOOLEAN NOT NULL DEFAULT FALSE;
