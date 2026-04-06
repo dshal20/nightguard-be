@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,6 +41,17 @@ public class VenueController {
   @GetMapping
   public ResponseEntity<List<Venue>> getVenues(Authentication authentication) {
     return ResponseEntity.ok(venueService.getAllForUser(authentication.getName()));
+  }
+
+  @GetMapping("/nearby")
+  public ResponseEntity<List<NearbyVenueResponse>> getNearbyVenues(
+      @RequestParam String city,
+      @RequestParam String state,
+      @RequestParam(required = false) String zip) {
+    List<NearbyVenueResponse> venues = venueService.getNearbyVenues(city, state, zip).stream()
+        .map(NearbyVenueResponse::from)
+        .toList();
+    return ResponseEntity.ok(venues);
   }
 
   @GetMapping("/{id}")

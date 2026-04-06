@@ -72,6 +72,13 @@ public class VenueService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
 
+  public List<Venue> getNearbyVenues(String city, String state, String zip) {
+    if (zip != null) {
+      return venueRepository.findByDataSharingEnabledAndCityIgnoreCaseAndStateIgnoreCaseAndPostalCode(true, city, state, zip);
+    }
+    return venueRepository.findByDataSharingEnabledAndCityIgnoreCaseAndStateIgnoreCase(true, city, state);
+  }
+
   public List<VenueMember> getMembers(UUID venueId) {
     getById(venueId);
     return venueMemberRepository.findByVenueId(venueId);
