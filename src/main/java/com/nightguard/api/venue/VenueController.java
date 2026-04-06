@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nightguard.api.notification.NotificationService;
+import com.nightguard.api.notification.NotificationSubscription;
+import com.nightguard.api.notification.SubscribeRequest;
+
 @RestController
 @RequestMapping("/venues")
 public class VenueController {
@@ -25,12 +29,14 @@ public class VenueController {
   private final VenueService venueService;
   private final VenueCapacityService venueCapacityService;
   private final VenueHeadcountService venueHeadcountService;
+  private final NotificationService notificationService;
 
   public VenueController(VenueService venueService, VenueCapacityService venueCapacityService,
-      VenueHeadcountService venueHeadcountService) {
+      VenueHeadcountService venueHeadcountService, NotificationService notificationService) {
     this.venueService = venueService;
     this.venueCapacityService = venueCapacityService;
     this.venueHeadcountService = venueHeadcountService;
+    this.notificationService = notificationService;
   }
 
   @PostMapping
@@ -135,5 +141,23 @@ public class VenueController {
       @RequestBody AddHeadcountRequest request,
       Authentication authentication) {
     return ResponseEntity.ok(venueHeadcountService.addHeadcount(id, request, authentication.getName()));
+  }
+
+  @GetMapping("/{id}/subscriptions")
+  public ResponseEntity<List<NotificationSubscription>> getSubscriptions(@PathVariable UUID id) {
+    return ResponseEntity.ok(notificationService.getSubscriptions(id));
+  }
+
+  @PostMapping("/{id}/subscriptions")
+  public ResponseEntity<List<NotificationSubscription>> subscribe(
+      @PathVariable UUID id,
+      @RequestBody SubscribeRequest request) {
+    return ResponseEntity.ok(notificationService.subscribe(id, request.getVenueIds()));
+  }
+
+  @DeleteMapping("/{id}/subscriptions/{venueId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void unsubscribe(@PathVariable UUID id, @PathVariable UUID venueId) {
+    notificationService.unsubscribe(id, venueId);
   }
 }
