@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.nightguard.api.incident.IncidentRepository;
 import com.nightguard.api.incident.IncidentResponse;
+import com.nightguard.api.notification.PushNotificationService;
 import com.nightguard.api.user.Role;
 import com.nightguard.api.user.User;
 import com.nightguard.api.user.UserRepository;
@@ -22,15 +23,18 @@ public class OffenderService {
   private final VenueMemberRepository venueMemberRepository;
   private final UserRepository userRepository;
   private final IncidentRepository incidentRepository;
+  private final PushNotificationService pushNotificationService;
 
   public OffenderService(OffenderRepository offenderRepository,
       VenueMemberRepository venueMemberRepository,
       UserRepository userRepository,
-      IncidentRepository incidentRepository) {
+      IncidentRepository incidentRepository,
+      PushNotificationService pushNotificationService) {
     this.offenderRepository = offenderRepository;
     this.venueMemberRepository = venueMemberRepository;
     this.userRepository = userRepository;
     this.incidentRepository = incidentRepository;
+    this.pushNotificationService = pushNotificationService;
   }
 
   public OffenderResponse create(CreateOffenderRequest request, String requestingUserId) {
@@ -46,7 +50,9 @@ public class OffenderService {
     offender.setGlobalId(request.getGlobalId());
     offender.setNotes(request.getNotes());
 
-    return OffenderResponse.from(offenderRepository.save(offender));
+    Offender saved = offenderRepository.save(offender);
+    pushNotificationService.sendForOffender(saved.getVenueId(), saved.getId());
+    return OffenderResponse.from(saved);
   }
 
   public List<OffenderResponse> getByVenue(UUID venueId, String requestingUserId) {

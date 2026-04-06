@@ -34,6 +34,9 @@ public class User {
   @Column(name = "role", nullable = false)
   private Role role = Role.USER;
 
+  @Column(name = "fcm_token")
+  private String fcmToken;
+
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
 
@@ -69,6 +72,9 @@ public class User {
 
   public Role getRole() { return role; }
   public void setRole(Role role) { this.role = role; }
+
+  public String getFcmToken() { return fcmToken; }
+  public void setFcmToken(String fcmToken) { this.fcmToken = fcmToken; }
 
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
