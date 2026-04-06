@@ -9,24 +9,24 @@ public class NotificationSubscriptionResponse {
   private UUID id;
   private UUID subscriber;
   private UUID venueId;
-  private String venueName;
-  private String venueStreetAddress;
-  private String venueCity;
-  private String venueState;
-  private String venuePostalCode;
-  private String venuePhoneNumber;
+  private String name;
+  private String streetAddress;
+  private String city;
+  private String state;
+  private String postalCode;
+  private String phoneNumber;
 
   public static NotificationSubscriptionResponse from(NotificationSubscription subscription, Venue venue) {
     NotificationSubscriptionResponse dto = new NotificationSubscriptionResponse();
     dto.setId(subscription.getId());
     dto.setSubscriber(subscription.getSubscriber());
     dto.setVenueId(subscription.getVenueId());
-    dto.setVenueName(venue.getName());
-    dto.setVenueStreetAddress(venue.getStreetAddress());
-    dto.setVenueCity(venue.getCity());
-    dto.setVenueState(venue.getState());
-    dto.setVenuePostalCode(venue.getPostalCode());
-    dto.setVenuePhoneNumber(venue.getPhoneNumber());
+    dto.setName(venue.getName());
+    dto.setStreetAddress(venue.getStreetAddress());
+    dto.setCity(venue.getCity());
+    dto.setState(venue.getState());
+    dto.setPostalCode(venue.getPostalCode());
+    dto.setPhoneNumber(venue.getPhoneNumber());
     return dto;
   }
 
@@ -39,21 +39,21 @@ public class NotificationSubscriptionResponse {
   public UUID getVenueId() { return venueId; }
   public void setVenueId(UUID venueId) { this.venueId = venueId; }
 
-  public String getVenueName() { return venueName; }
-  public void setVenueName(String venueName) { this.venueName = venueName; }
+  public String getName() { return name; }
+  public void setName(String name) { this.name = name; }
 
-  public String getVenueStreetAddress() { return venueStreetAddress; }
-  public void setVenueStreetAddress(String venueStreetAddress) { this.venueStreetAddress = venueStreetAddress; }
+  public String getStreetAddress() { return streetAddress; }
+  public void setStreetAddress(String streetAddress) { this.streetAddress = streetAddress; }
 
-  public String getVenueCity() { return venueCity; }
-  public void setVenueCity(String venueCity) { this.venueCity = venueCity; }
+  public String getCity() { return city; }
+  public void setCity(String city) { this.city = city; }
 
-  public String getVenueState() { return venueState; }
-  public void setVenueState(String venueState) { this.venueState = venueState; }
+  public String getState() { return state; }
+  public void setState(String state) { this.state = state; }
 
-  public String getVenuePostalCode() { return venuePostalCode; }
-  public void setVenuePostalCode(String venuePostalCode) { this.venuePostalCode = venuePostalCode; }
+  public String getPostalCode() { return postalCode; }
+  public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
 
-  public String getVenuePhoneNumber() { return venuePhoneNumber; }
-  public void setVenuePhoneNumber(String venuePhoneNumber) { this.venuePhoneNumber = venuePhoneNumber; }
+  public String getPhoneNumber() { return phoneNumber; }
+  public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 }
