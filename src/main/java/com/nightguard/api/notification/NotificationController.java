@@ -30,12 +30,12 @@ public class NotificationController {
   }
 
   @GetMapping("/{venueId}/subscriptions")
-  public List<NotificationSubscription> getSubscriptions(@PathVariable UUID venueId) {
+  public List<NotificationSubscriptionResponse> getSubscriptions(@PathVariable UUID venueId) {
     return notificationService.getSubscriptions(venueId);
   }
 
   @PostMapping("/{venueId}/subscriptions")
-  public List<NotificationSubscription> subscribe(
+  public List<NotificationSubscriptionResponse> subscribe(
       @PathVariable UUID venueId,
       @RequestBody SubscribeRequest request) {
     return notificationService.subscribe(venueId, request.getVenueIds());

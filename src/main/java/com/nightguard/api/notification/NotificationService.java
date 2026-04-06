@@ -7,16 +7,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.nightguard.api.venue.Venue;
+import com.nightguard.api.venue.VenueRepository;
+
 @Service
 public class NotificationService {
 
   private final NotificationSubscriptionRepository subscriptionRepository;
+  private final VenueRepository venueRepository;
 
-  public NotificationService(NotificationSubscriptionRepository subscriptionRepository) {
+  public NotificationService(NotificationSubscriptionRepository subscriptionRepository,
+      VenueRepository venueRepository) {
     this.subscriptionRepository = subscriptionRepository;
+    this.venueRepository = venueRepository;
   }
 
-  public List<NotificationSubscription> subscribe(UUID subscriberVenueId, List<UUID> venueIds) {
+  public List<NotificationSubscriptionResponse> subscribe(UUID subscriberVenueId, List<UUID> venueIds) {
     List<NotificationSubscription> subscriptions = venueIds.stream()
         .map(venueId -> {
           NotificationSubscription subscription = new NotificationSubscription();
@@ -25,11 +31,11 @@ public class NotificationService {
           return subscription;
         })
         .toList();
-    return subscriptionRepository.saveAll(subscriptions);
+    return toResponse(subscriptionRepository.saveAll(subscriptions));
   }
 
-  public List<NotificationSubscription> getSubscriptions(UUID subscriberVenueId) {
-    return subscriptionRepository.findBySubscriber(subscriberVenueId);
+  public List<NotificationSubscriptionResponse> getSubscriptions(UUID subscriberVenueId) {
+    return toResponse(subscriptionRepository.findBySubscriber(subscriberVenueId));
   }
 
   public void unsubscribe(UUID subscriberVenueId, UUID venueId) {
@@ -37,5 +43,13 @@ public class NotificationService {
         .findBySubscriberAndVenueId(subscriberVenueId, venueId)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     subscriptionRepository.delete(subscription);
+  }
+
+  private List<NotificationSubscriptionResponse> toResponse(List<NotificationSubscription> subscriptions) {
+    return subscriptions.stream().map(sub -> {
+      Venue venue = venueRepository.findById(sub.getVenueId())
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+      return NotificationSubscriptionResponse.from(sub, venue);
+    }).toList();
   }
 }
