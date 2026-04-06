@@ -29,19 +29,19 @@ public class NotificationController {
     this.userRepository = userRepository;
   }
 
-  @GetMapping("/venues/{venueId}/subscriptions")
+  @GetMapping("/{venueId}/subscriptions")
   public List<NotificationSubscription> getSubscriptions(@PathVariable UUID venueId) {
     return notificationService.getSubscriptions(venueId);
   }
 
-  @PostMapping("/venues/{venueId}/subscriptions")
+  @PostMapping("/{venueId}/subscriptions")
   public List<NotificationSubscription> subscribe(
       @PathVariable UUID venueId,
       @RequestBody SubscribeRequest request) {
     return notificationService.subscribe(venueId, request.getVenueIds());
   }
 
-  @DeleteMapping("/venues/{venueId}/subscriptions/{targetVenueId}")
+  @DeleteMapping("/{venueId}/subscriptions/{targetVenueId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void unsubscribe(@PathVariable UUID venueId, @PathVariable UUID targetVenueId) {
     notificationService.unsubscribe(venueId, targetVenueId);
