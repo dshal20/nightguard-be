@@ -18,7 +18,7 @@ public class NotificationSubscription {
   private UUID id;
 
   @Column(name = "subscriber", nullable = false)
-  private String subscriber;
+  private UUID subscriber;
 
   @Column(name = "venue_id", nullable = false)
   private UUID venueId;
@@ -26,8 +26,8 @@ public class NotificationSubscription {
   public UUID getId() { return id; }
   public void setId(UUID id) { this.id = id; }
 
-  public String getSubscriber() { return subscriber; }
-  public void setSubscriber(String subscriber) { this.subscriber = subscriber; }
+  public UUID getSubscriber() { return subscriber; }
+  public void setSubscriber(UUID subscriber) { this.subscriber = subscriber; }
 
   public UUID getVenueId() { return venueId; }
   public void setVenueId(UUID venueId) { this.venueId = venueId; }

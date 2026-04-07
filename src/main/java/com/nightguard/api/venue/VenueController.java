@@ -45,10 +45,11 @@ public class VenueController {
 
   @GetMapping("/nearby")
   public ResponseEntity<List<NearbyVenueResponse>> getNearbyVenues(
+      @RequestParam UUID venueId,
       @RequestParam String city,
       @RequestParam String state,
       @RequestParam(required = false) String zip) {
-    List<NearbyVenueResponse> venues = venueService.getNearbyVenues(city, state, zip).stream()
+    List<NearbyVenueResponse> venues = venueService.getNearbyVenues(city, state, zip, venueId).stream()
         .map(NearbyVenueResponse::from)
         .toList();
     return ResponseEntity.ok(venues);
@@ -136,4 +137,5 @@ public class VenueController {
       Authentication authentication) {
     return ResponseEntity.ok(venueHeadcountService.addHeadcount(id, request, authentication.getName()));
   }
+
 }

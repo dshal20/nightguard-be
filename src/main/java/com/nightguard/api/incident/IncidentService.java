@@ -7,10 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.nightguard.api.notification.PushNotificationService;
 import com.nightguard.api.user.Role;
 import com.nightguard.api.user.User;
 import com.nightguard.api.user.UserRepository;
 import com.nightguard.api.venue.VenueMemberRepository;
+import com.nightguard.api.venue.VenueRepository;
 
 @Service
 public class IncidentService {
@@ -18,13 +20,19 @@ public class IncidentService {
   private final IncidentRepository incidentRepository;
   private final VenueMemberRepository venueMemberRepository;
   private final UserRepository userRepository;
+  private final VenueRepository venueRepository;
+  private final PushNotificationService pushNotificationService;
 
   public IncidentService(IncidentRepository incidentRepository,
       VenueMemberRepository venueMemberRepository,
-      UserRepository userRepository) {
+      UserRepository userRepository,
+      VenueRepository venueRepository,
+      PushNotificationService pushNotificationService) {
     this.incidentRepository = incidentRepository;
     this.venueMemberRepository = venueMemberRepository;
     this.userRepository = userRepository;
+    this.venueRepository = venueRepository;
+    this.pushNotificationService = pushNotificationService;
   }
 
   public IncidentResponse create(CreateIncidentRequest request, String reporterId) {
@@ -44,7 +52,14 @@ public class IncidentService {
     incident.setStatus(request.getStatus());
     incident.setOffenderIds(request.getOffenderIds());
 
-    return toResponse(incidentRepository.save(incident));
+    Incident saved = incidentRepository.save(incident);
+    boolean dataSharingEnabled = venueRepository.findById(saved.getVenueId())
+        .map(v -> v.isDataSharingEnabled())
+        .orElse(false);
+    if (dataSharingEnabled) {
+      pushNotificationService.sendForIncident(saved.getVenueId(), saved.getId());
+    }
+    return toResponse(saved);
   }
 
   public List<IncidentResponse> getByVenue(UUID venueId, String requestingUserId) {
