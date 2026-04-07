@@ -1,5 +1,6 @@
 package com.nightguard.api.notification;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public class NotificationService {
    * Returns notifications from all venues that subscriberVenueId is subscribed to,
    * enriched with incident details, sorted newest first.
    */
-  public List<NotificationActivityResponse> getActivity(UUID subscriberVenueId) {
+  public List<NotificationActivityResponse> getActivity(UUID subscriberVenueId, Instant since) {
     List<UUID> watchedVenueIds = subscriptionRepository
         .findBySubscriber(subscriberVenueId).stream()
         .map(NotificationSubscription::getVenueId)
@@ -71,8 +72,11 @@ public class NotificationService {
 
     if (watchedVenueIds.isEmpty()) return List.of();
 
-    return notificationRepository
-        .findByFromVenueInOrderByCreatedAtDesc(watchedVenueIds)
+    List<Notification> notifications = since != null
+        ? notificationRepository.findByFromVenueInAndCreatedAtGreaterThanEqualOrderByCreatedAtDesc(watchedVenueIds, since)
+        : notificationRepository.findByFromVenueInOrderByCreatedAtDesc(watchedVenueIds);
+
+    return notifications
         .stream()
         .map(n -> {
           Venue fromVenue = venueRepository.findById(n.getFromVenue())
