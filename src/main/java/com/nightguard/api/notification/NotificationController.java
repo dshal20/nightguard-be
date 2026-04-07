@@ -41,5 +41,8 @@ public class NotificationController {
     notificationService.unsubscribe(venueId, targetVenueId);
   }
 
-
+  @GetMapping("/{venueId}/activity")
+  public List<NotificationActivityResponse> getActivity(@PathVariable UUID venueId) {
+    return notificationService.getActivity(venueId);
+  }
 }

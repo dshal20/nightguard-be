@@ -3,6 +3,7 @@ package com.nightguard.api.notification;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,6 +19,8 @@ import com.google.firebase.messaging.MessagingErrorCode;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.SendResponse;
 import com.nightguard.api.fcm.FcmTokenRepository;
+import com.nightguard.api.incident.Incident;
+import com.nightguard.api.incident.IncidentRepository;
 import com.nightguard.api.venue.Venue;
 import com.nightguard.api.venue.VenueRepository;
 
@@ -31,6 +34,7 @@ public class PushNotificationService {
   private final NotificationSubscriptionRepository subscriptionRepository;
   private final FcmTokenRepository fcmTokenRepository;
   private final VenueRepository venueRepository;
+  private final IncidentRepository incidentRepository;
   private final FirebaseMessaging firebaseMessaging;
 
   public PushNotificationService(
@@ -38,11 +42,13 @@ public class PushNotificationService {
       NotificationSubscriptionRepository subscriptionRepository,
       FcmTokenRepository fcmTokenRepository,
       VenueRepository venueRepository,
+      IncidentRepository incidentRepository,
       FirebaseMessaging firebaseMessaging) {
     this.notificationRepository = notificationRepository;
     this.subscriptionRepository = subscriptionRepository;
     this.fcmTokenRepository = fcmTokenRepository;
     this.venueRepository = venueRepository;
+    this.incidentRepository = incidentRepository;
     this.firebaseMessaging = firebaseMessaging;
   }
 
@@ -54,6 +60,9 @@ public class PushNotificationService {
     notification.setIncidentId(incidentId);
     notificationRepository.save(notification);
 
+    Incident incident = incidentRepository.findById(incidentId).orElse(null);
+    if (incident == null) return;
+
     String venueName = venueRepository.findById(venueId)
         .map(Venue::getName)
         .orElse("A venue");
@@ -61,14 +70,25 @@ public class PushNotificationService {
     Set<String> tokens = collectTokensForSubscribers(venueId);
     if (tokens.isEmpty()) return;
 
+    String incidentType = formatIncidentType(incident.getType().name());
+    String descriptionPreview = truncate(incident.getDescription(), 80);
+
     com.google.firebase.messaging.Notification fcmNotification =
         com.google.firebase.messaging.Notification.builder()
-            .setTitle("New Incident Report")
-            .setBody(venueName + " has filed a new incident report")
+            .setTitle(incidentType + " @ " + venueName)
+            .setBody(descriptionPreview)
             .build();
 
-    sendInBatches(new ArrayList<>(tokens), fcmNotification,
-        "INCIDENT_REPORTED", venueId.toString(), "incidentId", incidentId.toString());
+    Map<String, String> data = Map.of(
+        "type", "INCIDENT_REPORTED",
+        "incidentId", incidentId.toString(),
+        "incidentType", incident.getType().name(),
+        "severity", incident.getSeverity().name(),
+        "venueName", venueName,
+        "venueId", venueId.toString()
+    );
+
+    sendInBatches(new ArrayList<>(tokens), fcmNotification, data);
   }
 
   @Async("notificationExecutor")
@@ -92,15 +112,16 @@ public class PushNotificationService {
             .setBody(venueName + " has added a new offender to the network")
             .build();
 
-    sendInBatches(new ArrayList<>(tokens), fcmNotification,
-        "OFFENDER_ADDED", venueId.toString(), "offenderId", offenderId.toString());
+    Map<String, String> data = Map.of(
+        "type", "OFFENDER_ADDED",
+        "offenderId", offenderId.toString(),
+        "venueName", venueName,
+        "venueId", venueId.toString()
+    );
+
+    sendInBatches(new ArrayList<>(tokens), fcmNotification, data);
   }
 
-  /**
-   * Finds all venues subscribed to sourceVenue, then collects their members'
-   * FCM tokens from the fcm_tokens table. A Set deduplicates tokens for users
-   * who belong to multiple subscriber venues.
-   */
   private Set<String> collectTokensForSubscribers(UUID sourceVenueId) {
     List<NotificationSubscription> subscriptions = subscriptionRepository.findByVenueId(sourceVenueId);
     Set<String> tokens = new HashSet<>();
@@ -110,26 +131,18 @@ public class PushNotificationService {
     return tokens;
   }
 
-  /**
-   * Sends FCM notifications in batches of 500 (the FCM multicast limit).
-   * Stale/invalid tokens are removed from the database automatically.
-   */
   private void sendInBatches(
       List<String> tokens,
       com.google.firebase.messaging.Notification notification,
-      String type, String venueId, String payloadKey, String payloadValue) {
+      Map<String, String> data) {
 
     for (int i = 0; i < tokens.size(); i += FCM_BATCH_LIMIT) {
       List<String> batch = tokens.subList(i, Math.min(i + FCM_BATCH_LIMIT, tokens.size()));
-
       MulticastMessage message = MulticastMessage.builder()
           .setNotification(notification)
-          .putData("type", type)
-          .putData("venueId", venueId)
-          .putData(payloadKey, payloadValue)
+          .putAllData(data)
           .addAllTokens(batch)
           .build();
-
       try {
         BatchResponse response = firebaseMessaging.sendEachForMulticast(message);
         log.info("FCM batch sent: {}/{} succeeded", response.getSuccessCount(), batch.size());
@@ -140,10 +153,6 @@ public class PushNotificationService {
     }
   }
 
-  /**
-   * Removes tokens that FCM has marked as invalid or unregistered so they
-   * don't waste future sends. Deletes all rows with that token value.
-   */
   private void cleanupInvalidTokens(List<String> tokens, BatchResponse response) {
     List<SendResponse> responses = response.getResponses();
     for (int i = 0; i < responses.size(); i++) {
@@ -157,5 +166,22 @@ public class PushNotificationService {
         }
       }
     }
+  }
+
+  /** "VERBAL_HARASSMENT" → "Verbal Harassment" */
+  private String formatIncidentType(String enumName) {
+    String[] words = enumName.split("_");
+    StringBuilder sb = new StringBuilder();
+    for (String word : words) {
+      if (!sb.isEmpty()) sb.append(" ");
+      sb.append(Character.toUpperCase(word.charAt(0)));
+      sb.append(word.substring(1).toLowerCase());
+    }
+    return sb.toString();
+  }
+
+  private String truncate(String text, int maxLength) {
+    if (text == null) return "";
+    return text.length() <= maxLength ? text : text.substring(0, maxLength - 1) + "…";
   }
 }
