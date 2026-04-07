@@ -3,6 +3,9 @@ package com.nightguard.api.notification;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,6 +28,7 @@ public class Notification {
   private UUID fromVenue;
 
   @Enumerated(EnumType.STRING)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Column(name = "type", nullable = false, columnDefinition = "notification_type")
   private NotificationType type;
 
