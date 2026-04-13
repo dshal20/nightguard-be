@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface NotificationSubscriptionRepository extends JpaRepository<NotificationSubscription, UUID> {
   List<NotificationSubscription> findByVenueId(UUID venueId);
 
-  List<NotificationSubscription> findBySubscriberOrderByCreatedAtAsc(UUID subscriber);
+  List<NotificationSubscription> findBySubscriberOrderByCreatedAtAscIdAsc(UUID subscriber);
 
   java.util.Optional<NotificationSubscription> findBySubscriberAndVenueId(UUID subscriber, UUID venueId);
 }
