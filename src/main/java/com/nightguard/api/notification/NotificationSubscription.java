@@ -1,5 +1,6 @@
 package com.nightguard.api.notification;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import com.nightguard.api.incident.IncidentSeverity;
@@ -11,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -30,6 +32,14 @@ public class NotificationSubscription {
   @Enumerated(EnumType.STRING)
   @Column(name = "notification_level", nullable = false)
   private IncidentSeverity notificationLevel = IncidentSeverity.LOW;
+
+  @Column(name = "created_at", updatable = false, nullable = false)
+  private Instant createdAt;
+
+  @PrePersist
+  void prePersist() {
+    this.createdAt = Instant.now();
+  }
 
   public UUID getId() { return id; }
   public void setId(UUID id) { this.id = id; }

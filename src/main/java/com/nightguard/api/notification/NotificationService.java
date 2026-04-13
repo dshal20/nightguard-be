@@ -63,7 +63,7 @@ public class NotificationService {
   }
 
   public List<NotificationSubscriptionResponse> getSubscriptions(UUID subscriberVenueId) {
-    return toResponse(subscriptionRepository.findBySubscriber(subscriberVenueId));
+    return toResponse(subscriptionRepository.findBySubscriberOrderByCreatedAtAsc(subscriberVenueId));
   }
 
   public void unsubscribe(UUID subscriberVenueId, UUID venueId) {
@@ -78,7 +78,7 @@ public class NotificationService {
    * enriched with incident details, sorted newest first.
    */
   public List<NotificationActivityResponse> getActivity(UUID subscriberVenueId, Instant since) {
-    List<NotificationSubscription> subscriptions = subscriptionRepository.findBySubscriber(subscriberVenueId);
+    List<NotificationSubscription> subscriptions = subscriptionRepository.findBySubscriberOrderByCreatedAtAsc(subscriberVenueId);
 
     if (subscriptions.isEmpty()) return List.of();
 
