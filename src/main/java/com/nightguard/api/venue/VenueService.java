@@ -147,6 +147,29 @@ public class VenueService {
     return venueMemberRepository.save(member);
   }
 
+  public Venue update(UUID venueId, UpdateVenueRequest request, String requestingUserId) {
+    User requestingUser = userRepository.findById(requestingUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    boolean isAdmin = requestingUser.getRole() == Role.ADMIN;
+    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
+        .orElse(false);
+
+    if (!isAdmin && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    Venue venue = getById(venueId);
+    if (request.getName() != null) venue.setName(request.getName());
+    if (request.getStreetAddress() != null) venue.setStreetAddress(request.getStreetAddress());
+    if (request.getCity() != null) venue.setCity(request.getCity());
+    if (request.getState() != null) venue.setState(request.getState());
+    if (request.getPostalCode() != null) venue.setPostalCode(request.getPostalCode());
+    if (request.getPhoneNumber() != null) venue.setPhoneNumber(request.getPhoneNumber());
+    return venueRepository.save(venue);
+  }
+
   public Venue updateDataSharing(UUID venueId, boolean enabled, String requestingUserId) {
     User requestingUser = userRepository.findById(requestingUserId)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
