@@ -130,6 +130,14 @@ public class VenueController {
     return ResponseEntity.ok(venueHeadcountService.getHeadcounts(id, authentication.getName()));
   }
 
+  @PutMapping("/{id}/data-sharing")
+  public ResponseEntity<Venue> updateDataSharing(
+      @PathVariable UUID id,
+      @RequestBody UpdateDataSharingRequest request,
+      Authentication authentication) {
+    return ResponseEntity.ok(venueService.updateDataSharing(id, request.enabled(), authentication.getName()));
+  }
+
   @PostMapping("/{id}/headcount")
   public ResponseEntity<VenueHeadcountResponse> addHeadcount(
       @PathVariable UUID id,

@@ -147,6 +147,24 @@ public class VenueService {
     return venueMemberRepository.save(member);
   }
 
+  public Venue updateDataSharing(UUID venueId, boolean enabled, String requestingUserId) {
+    User requestingUser = userRepository.findById(requestingUserId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+    boolean isAdmin = requestingUser.getRole() == Role.ADMIN;
+    boolean isManager = venueMemberRepository.findByVenueIdAndUserId(venueId, requestingUserId)
+        .map(m -> m.getRole() == VenueRole.MANAGER)
+        .orElse(false);
+
+    if (!isAdmin && !isManager) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    Venue venue = getById(venueId);
+    venue.setDataSharingEnabled(enabled);
+    return venueRepository.save(venue);
+  }
+
   public VenueMember updateMemberRole(UUID venueId, String targetUserId, UpdateMemberRoleRequest request,
       String requestingUserId) {
     User requestingUser = userRepository.findById(requestingUserId)
