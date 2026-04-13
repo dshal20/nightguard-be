@@ -3,6 +3,12 @@ package com.nightguard.api.offender;
 import java.time.Instant;
 import java.util.UUID;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,6 +49,10 @@ public class Offender {
 
   @Column(name = "notes")
   private String notes;
+
+  @JdbcTypeCode(SqlTypes.ARRAY)
+  @Column(name = "photo_urls", columnDefinition = "TEXT[]")
+  private List<String> photoUrls = new ArrayList<>();
 
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -88,6 +98,9 @@ public class Offender {
 
   public String getNotes() { return notes; }
   public void setNotes(String notes) { this.notes = notes; }
+
+  public List<String> getPhotoUrls() { return photoUrls; }
+  public void setPhotoUrls(List<String> photoUrls) { this.photoUrls = photoUrls; }
 
   public Instant getCreatedAt() { return createdAt; }
   public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }

@@ -49,6 +49,7 @@ public class OffenderService {
     offender.setCurrentStatus(request.getCurrentStatus());
     offender.setGlobalId(request.getGlobalId());
     offender.setNotes(request.getNotes());
+    if (request.getPhotoUrls() != null) offender.setPhotoUrls(request.getPhotoUrls());
 
     Offender saved = offenderRepository.save(offender);
     pushNotificationService.sendForOffender(saved.getVenueId(), saved.getId());

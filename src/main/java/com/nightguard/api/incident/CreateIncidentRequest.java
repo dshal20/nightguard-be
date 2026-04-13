@@ -34,4 +34,8 @@ public class CreateIncidentRequest {
 
   public List<UUID> getOffenderIds() { return offenderIds; }
   public void setOffenderIds(List<UUID> offenderIds) { this.offenderIds = offenderIds; }
+
+  private List<String> mediaUrls = new ArrayList<>();
+  public List<String> getMediaUrls() { return mediaUrls; }
+  public void setMediaUrls(List<String> mediaUrls) { this.mediaUrls = mediaUrls; }
 }

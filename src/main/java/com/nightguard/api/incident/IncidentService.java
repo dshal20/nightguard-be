@@ -51,6 +51,7 @@ public class IncidentService {
     incident.setKeywords(request.getKeywords());
     incident.setStatus(request.getStatus());
     incident.setOffenderIds(request.getOffenderIds());
+    if (request.getMediaUrls() != null) incident.setMediaUrls(request.getMediaUrls());
 
     Incident saved = incidentRepository.save(incident);
     boolean dataSharingEnabled = venueRepository.findById(saved.getVenueId())

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,11 +44,17 @@ public class Incident {
   @Column(name = "description")
   private String description;
 
+  @JdbcTypeCode(SqlTypes.ARRAY)
   @Column(name = "keywords", columnDefinition = "TEXT[]")
   private List<String> keywords;
 
+  @JdbcTypeCode(SqlTypes.ARRAY)
   @Column(name = "offender_ids", columnDefinition = "UUID[]")
   private List<UUID> offenderIds = new ArrayList<>();
+
+  @JdbcTypeCode(SqlTypes.ARRAY)
+  @Column(name = "media_urls", columnDefinition = "TEXT[]")
+  private List<String> mediaUrls = new ArrayList<>();
 
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
@@ -93,6 +102,9 @@ public class Incident {
 
   public List<UUID> getOffenderIds() { return offenderIds; }
   public void setOffenderIds(List<UUID> offenderIds) { this.offenderIds = offenderIds; }
+
+  public List<String> getMediaUrls() { return mediaUrls; }
+  public void setMediaUrls(List<String> mediaUrls) { this.mediaUrls = mediaUrls; }
 
   public IncidentStatus getStatus() { return status; }
   public void setStatus(IncidentStatus status) { this.status = status; }
