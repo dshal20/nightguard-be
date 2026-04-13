@@ -8,8 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.nightguard.api.incident.Incident;
 import com.nightguard.api.incident.IncidentRepository;
+import com.nightguard.api.incident.IncidentSeverity;
 import com.nightguard.api.offender.Offender;
 import com.nightguard.api.offender.OffenderRepository;
 import com.nightguard.api.venue.Venue;
@@ -37,16 +41,25 @@ public class NotificationService {
     this.offenderRepository = offenderRepository;
   }
 
-  public List<NotificationSubscriptionResponse> subscribe(UUID subscriberVenueId, List<UUID> venueIds) {
+  public List<NotificationSubscriptionResponse> subscribe(UUID subscriberVenueId, List<UUID> venueIds, IncidentSeverity notificationLevel) {
     List<NotificationSubscription> subscriptions = venueIds.stream()
         .map(venueId -> {
           NotificationSubscription subscription = new NotificationSubscription();
           subscription.setSubscriber(subscriberVenueId);
           subscription.setVenueId(venueId);
+          subscription.setNotificationLevel(notificationLevel != null ? notificationLevel : IncidentSeverity.LOW);
           return subscription;
         })
         .toList();
     return toResponse(subscriptionRepository.saveAll(subscriptions));
+  }
+
+  public NotificationSubscriptionResponse updateNotificationLevel(UUID subscriberVenueId, UUID venueId, IncidentSeverity notificationLevel) {
+    NotificationSubscription subscription = subscriptionRepository
+        .findBySubscriberAndVenueId(subscriberVenueId, venueId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    subscription.setNotificationLevel(notificationLevel);
+    return toResponse(List.of(subscriptionRepository.save(subscription))).get(0);
   }
 
   public List<NotificationSubscriptionResponse> getSubscriptions(UUID subscriberVenueId) {
@@ -65,12 +78,16 @@ public class NotificationService {
    * enriched with incident details, sorted newest first.
    */
   public List<NotificationActivityResponse> getActivity(UUID subscriberVenueId, Instant since) {
-    List<UUID> watchedVenueIds = subscriptionRepository
-        .findBySubscriber(subscriberVenueId).stream()
+    List<NotificationSubscription> subscriptions = subscriptionRepository.findBySubscriber(subscriberVenueId);
+
+    if (subscriptions.isEmpty()) return List.of();
+
+    Map<UUID, IncidentSeverity> minLevelByVenue = subscriptions.stream()
+        .collect(Collectors.toMap(NotificationSubscription::getVenueId, NotificationSubscription::getNotificationLevel));
+
+    List<UUID> watchedVenueIds = subscriptions.stream()
         .map(NotificationSubscription::getVenueId)
         .toList();
-
-    if (watchedVenueIds.isEmpty()) return List.of();
 
     List<Notification> notifications = since != null
         ? notificationRepository.findByFromVenueInAndCreatedAtGreaterThanEqualOrderByCreatedAtDesc(watchedVenueIds, since)
@@ -88,6 +105,11 @@ public class NotificationService {
               ? offenderRepository.findById(n.getOffenderId()).orElse(null)
               : null;
           return NotificationActivityResponse.from(n, fromVenue, incident, offender);
+        })
+        .filter(n -> {
+          if (n.getIncident() == null) return true;
+          IncidentSeverity minLevel = minLevelByVenue.getOrDefault(n.getFromVenueId(), IncidentSeverity.LOW);
+          return n.getIncident().severity().ordinal() >= minLevel.ordinal();
         })
         .toList();
   }

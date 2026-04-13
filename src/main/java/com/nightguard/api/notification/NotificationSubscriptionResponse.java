@@ -2,6 +2,7 @@ package com.nightguard.api.notification;
 
 import java.util.UUID;
 
+import com.nightguard.api.incident.IncidentSeverity;
 import com.nightguard.api.venue.Venue;
 
 public class NotificationSubscriptionResponse {
@@ -15,6 +16,7 @@ public class NotificationSubscriptionResponse {
   private String state;
   private String postalCode;
   private String phoneNumber;
+  private IncidentSeverity notificationLevel;
 
   public static NotificationSubscriptionResponse from(NotificationSubscription subscription, Venue venue) {
     NotificationSubscriptionResponse dto = new NotificationSubscriptionResponse();
@@ -27,6 +29,7 @@ public class NotificationSubscriptionResponse {
     dto.setState(venue.getState());
     dto.setPostalCode(venue.getPostalCode());
     dto.setPhoneNumber(venue.getPhoneNumber());
+    dto.setNotificationLevel(subscription.getNotificationLevel());
     return dto;
   }
 
@@ -56,4 +59,7 @@ public class NotificationSubscriptionResponse {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public IncidentSeverity getNotificationLevel() { return notificationLevel; }
+  public void setNotificationLevel(IncidentSeverity notificationLevel) { this.notificationLevel = notificationLevel; }
 }
