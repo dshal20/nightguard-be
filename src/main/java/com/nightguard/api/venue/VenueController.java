@@ -60,6 +60,14 @@ public class VenueController {
     return ResponseEntity.ok(venueService.getById(id));
   }
 
+  @PatchMapping("/{id}")
+  public ResponseEntity<Venue> updateVenue(
+      @PathVariable UUID id,
+      @RequestBody UpdateVenueRequest request,
+      Authentication authentication) {
+    return ResponseEntity.ok(venueService.update(id, request, authentication.getName()));
+  }
+
   @PostMapping("/{id}/members")
   public ResponseEntity<List<VenueMemberResponse>> addMembers(
       @PathVariable UUID id,
