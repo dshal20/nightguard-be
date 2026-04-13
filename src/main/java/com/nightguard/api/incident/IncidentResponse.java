@@ -17,6 +17,7 @@ public class IncidentResponse {
   private String description;
   private List<String> keywords;
   private List<UUID> offenderIds;
+  private List<String> mediaUrls;
   private IncidentStatus status;
   private Instant createdAt;
   private Instant updatedAt;
@@ -31,6 +32,7 @@ public class IncidentResponse {
     res.description = incident.getDescription();
     res.keywords = incident.getKeywords();
     res.offenderIds = incident.getOffenderIds();
+    res.mediaUrls = incident.getMediaUrls();
     res.status = incident.getStatus();
     res.createdAt = incident.getCreatedAt();
     res.updatedAt = incident.getUpdatedAt();
@@ -45,6 +47,7 @@ public class IncidentResponse {
   public String getDescription() { return description; }
   public List<String> getKeywords() { return keywords; }
   public List<UUID> getOffenderIds() { return offenderIds; }
+  public List<String> getMediaUrls() { return mediaUrls; }
   public IncidentStatus getStatus() { return status; }
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
