@@ -58,13 +58,13 @@ public class VenueService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
     if (user.getRole() == Role.ADMIN) {
-      return venueRepository.findAll();
+      return venueRepository.findAllByOrderByCreatedAtAscIdAsc();
     }
 
     List<UUID> venueIds = venueMemberRepository.findByUserId(userId).stream()
         .map(VenueMember::getVenueId)
         .toList();
-    return venueRepository.findAllById(venueIds);
+    return venueRepository.findByIdInOrderByCreatedAtAscIdAsc(venueIds);
   }
 
   public Venue getById(UUID id) {
