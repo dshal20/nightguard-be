@@ -56,6 +56,8 @@ public class UserService {
       user.setEmail(request.getEmail());
     if (request.getPhoneNumber() != null)
       user.setPhoneNumber(request.getPhoneNumber());
+    if (request.getProfileUrl() != null)
+      user.setProfileUrl(request.getProfileUrl());
     return userRepository.save(user);
   }
 

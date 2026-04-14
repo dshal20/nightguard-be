@@ -17,4 +17,8 @@ public class UpdateUserRequest {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  private String profileUrl;
+  public String getProfileUrl() { return profileUrl; }
+  public void setProfileUrl(String profileUrl) { this.profileUrl = profileUrl; }
 }
