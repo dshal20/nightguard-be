@@ -1,5 +1,6 @@
 package com.nightguard.api.offender;
 
+import java.util.List;
 import java.util.UUID;
 
 public class UpdateOffenderRequest {
@@ -11,6 +12,7 @@ public class UpdateOffenderRequest {
   private String currentStatus;
   private UUID globalId;
   private String notes;
+  private List<String> photoUrls;
 
   public String getFirstName() { return firstName; }
   public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -32,4 +34,7 @@ public class UpdateOffenderRequest {
 
   public String getNotes() { return notes; }
   public void setNotes(String notes) { this.notes = notes; }
+
+  public List<String> getPhotoUrls() { return photoUrls; }
+  public void setPhotoUrls(List<String> photoUrls) { this.photoUrls = photoUrls; }
 }
