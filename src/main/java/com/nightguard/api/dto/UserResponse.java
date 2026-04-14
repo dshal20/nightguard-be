@@ -9,6 +9,7 @@ public class UserResponse {
   private String lastName;
   private String email;
   private String phoneNumber;
+  private String profileUrl;
   private Role role;
 
   public static UserResponse fromUser(User user) {
@@ -18,6 +19,7 @@ public class UserResponse {
     dto.setLastName(user.getLastName());
     dto.setEmail(user.getEmail());
     dto.setPhoneNumber(user.getPhoneNumber());
+    dto.setProfileUrl(user.getProfileUrl());
     dto.setRole(user.getRole());
     return dto;
   }
@@ -36,6 +38,9 @@ public class UserResponse {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public String getProfileUrl() { return profileUrl; }
+  public void setProfileUrl(String profileUrl) { this.profileUrl = profileUrl; }
 
   public Role getRole() { return role; }
   public void setRole(Role role) { this.role = role; }

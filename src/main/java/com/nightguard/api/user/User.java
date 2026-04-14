@@ -30,6 +30,9 @@ public class User {
   @Column(name = "phone_number")
   private String phoneNumber;
 
+  @Column(name = "profile_url")
+  private String profileUrl;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "role", nullable = false)
   private Role role = Role.USER;
@@ -66,6 +69,9 @@ public class User {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public String getProfileUrl() { return profileUrl; }
+  public void setProfileUrl(String profileUrl) { this.profileUrl = profileUrl; }
 
   public Role getRole() { return role; }
   public void setRole(Role role) { this.role = role; }
