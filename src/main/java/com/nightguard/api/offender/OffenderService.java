@@ -100,6 +100,7 @@ public class OffenderService {
     if (request.getCurrentStatus() != null) offender.setCurrentStatus(request.getCurrentStatus());
     if (request.getGlobalId() != null) offender.setGlobalId(request.getGlobalId());
     if (request.getNotes() != null) offender.setNotes(request.getNotes());
+    if (request.getPhotoUrls() != null) offender.setPhotoUrls(request.getPhotoUrls());
 
     return OffenderResponse.from(offenderRepository.save(offender));
   }

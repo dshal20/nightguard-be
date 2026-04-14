@@ -8,6 +8,7 @@ public class CreateVenueRequest {
   private String state;
   private String postalCode;
   private String phoneNumber;
+  private String venueImageUrl;
 
   public String getName() { return name; }
   public void setName(String name) { this.name = name; }
@@ -26,4 +27,7 @@ public class CreateVenueRequest {
 
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public String getVenueImageUrl() { return venueImageUrl; }
+  public void setVenueImageUrl(String venueImageUrl) { this.venueImageUrl = venueImageUrl; }
 }

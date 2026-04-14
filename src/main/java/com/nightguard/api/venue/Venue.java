@@ -37,6 +37,9 @@ public class Venue {
   @Column(name = "phone_number")
   private String phoneNumber;
 
+  @Column(name = "venue_image_url")
+  private String venueImageUrl;
+
   @Column(name = "invite_code", nullable = false, unique = true, updatable = false)
   private String inviteCode;
 
@@ -115,6 +118,14 @@ public class Venue {
 
   public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
+  }
+
+  public String getVenueImageUrl() {
+    return venueImageUrl;
+  }
+
+  public void setVenueImageUrl(String venueImageUrl) {
+    this.venueImageUrl = venueImageUrl;
   }
 
   public String getInviteCode() {
