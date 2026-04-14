@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnTransformer;
 
 @Entity
 @Table(name = "offender_bans")
@@ -22,7 +23,8 @@ public class OffenderBan {
   @Column(name = "offender_id")
   private UUID offenderId;
 
-  @Column(name = "type", columnDefinition = "ban_type")
+  @Column(name = "type")
+  @ColumnTransformer(write = "?::ban_type")
   private String type;
 
   @Column(name = "issued_by")
