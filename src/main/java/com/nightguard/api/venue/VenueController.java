@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nightguard.api.patronlog.CreatePatronLogRequest;
+import com.nightguard.api.patronlog.PatronLogResponse;
+import com.nightguard.api.patronlog.PatronLogService;
+
 @RestController
 @RequestMapping("/venues")
 public class VenueController {
@@ -25,12 +29,14 @@ public class VenueController {
   private final VenueService venueService;
   private final VenueCapacityService venueCapacityService;
   private final VenueHeadcountService venueHeadcountService;
+  private final PatronLogService patronLogService;
 
   public VenueController(VenueService venueService, VenueCapacityService venueCapacityService,
-      VenueHeadcountService venueHeadcountService) {
+      VenueHeadcountService venueHeadcountService, PatronLogService patronLogService) {
     this.venueService = venueService;
     this.venueCapacityService = venueCapacityService;
     this.venueHeadcountService = venueHeadcountService;
+    this.patronLogService = patronLogService;
   }
 
   @PostMapping
@@ -152,6 +158,21 @@ public class VenueController {
       @RequestBody AddHeadcountRequest request,
       Authentication authentication) {
     return ResponseEntity.ok(venueHeadcountService.addHeadcount(id, request, authentication.getName()));
+  }
+
+  @PostMapping("/{id}/patron-log")
+  public ResponseEntity<PatronLogResponse> addPatronLog(
+      @PathVariable UUID id,
+      @RequestBody CreatePatronLogRequest request,
+      Authentication authentication) {
+    return ResponseEntity.ok(patronLogService.addPatronLog(id, request, authentication.getName()));
+  }
+
+  @GetMapping("/{id}/patron-log")
+  public ResponseEntity<List<PatronLogResponse>> getPatronLogs(
+      @PathVariable UUID id,
+      Authentication authentication) {
+    return ResponseEntity.ok(patronLogService.getPatronLogs(id, authentication.getName()));
   }
 
 }

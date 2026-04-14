@@ -44,7 +44,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("http://localhost:3000", "https://nightguard-fe.onrender.com"));
+    config.setAllowedOrigins(List.of("http://localhost:3000", "https://nightguard-fe.onrender.com", "https://12d4-153-33-222-122.ngrok-free.app"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));
     config.setAllowCredentials(true);
