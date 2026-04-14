@@ -49,6 +49,7 @@ public class VenueService {
     venue.setState(request.getState());
     venue.setPostalCode(request.getPostalCode());
     venue.setPhoneNumber(request.getPhoneNumber());
+    venue.setVenueImageUrl(request.getVenueImageUrl());
     venue.setInviteCode(generateUniqueInviteCode());
     return venueRepository.save(venue);
   }
@@ -167,6 +168,7 @@ public class VenueService {
     if (request.getState() != null) venue.setState(request.getState());
     if (request.getPostalCode() != null) venue.setPostalCode(request.getPostalCode());
     if (request.getPhoneNumber() != null) venue.setPhoneNumber(request.getPhoneNumber());
+    if (request.getVenueImageUrl() != null) venue.setVenueImageUrl(request.getVenueImageUrl());
     return venueRepository.save(venue);
   }
 
